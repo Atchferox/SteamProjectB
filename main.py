@@ -1,8 +1,8 @@
 import json
 
-f = open('deelsteam.json')
+with open('deelsteam.json', 'r') as f:
+    data = json.load(f)
 
-data = json.load(f)
 
 i = 0
 while i < len(data):
