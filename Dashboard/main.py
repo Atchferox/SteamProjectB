@@ -1,6 +1,6 @@
 import json
 
-with open('deelsteam.json', 'r') as f:
+with open('Datasteam/deelsteam.json', 'r') as f:
     data = json.load(f)
 
 
