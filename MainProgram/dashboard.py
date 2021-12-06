@@ -8,4 +8,4 @@ dashboardwindow.state('zoomed')  # Fullscreen
 dashboardwindow.configure(background="#222831")
 
 mainloop()
-print('hello')
+
