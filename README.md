@@ -1,10 +1,15 @@
 # Projectgroep
 
 Luuk || Software Developer :desktop_computer:\
+\
 Ruben || Cyber Security and Cloud :satellite:\
+\
 Ghassan || Business IT & Managment 	:briefcase:\
+\
 Thomas || Artifficial Intelligence :pencil2:\
+\
 Jasper || Artifficial Intelligence :pencil2:\
+\
 Maarten || Technische Informatica 	:robot:
 
 ## Steam
