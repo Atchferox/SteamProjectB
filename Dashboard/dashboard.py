@@ -25,7 +25,15 @@ def sorting_data(databestand):
     return sortdict
 
 
+def getselectedelement(event):
+    selection = event.widget.curselection()
+    index = selection[0]
+    value = event.widget.get(index)
+    return value
+
+
 def gamewindow():
+
     sortdictforgame = sorting_data(data)
 
     win = Toplevel()
@@ -40,10 +48,11 @@ def gamewindow():
     gamelijst.pack(side=LEFT, padx=12, fill='y', pady=10)
     gamelijst.configure(font=("Montserrat Extra Light", 16), bg=bgcolor, fg='White',
                         activestyle='none', borderwidth=0, highlightthickness=0, selectbackground='#003A6E')
+    gamelijst.bind('<<ListboxSelect>>', getselectedelement)  # Als een item geselecteerd is dan word de functie gecalled
 
-    i = 1
+    i = 0
     len_max = 0
-    for key, value in sortdictforgame:
+    for key, x in sortdictforgame:
         gamelijst.insert(i, key)
         i += 1
         if len(key) > len_max:
