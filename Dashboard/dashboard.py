@@ -1,6 +1,10 @@
 from tkinter import *
 import json
 from tkinter import ttk
+from ctypes import windll
+
+# Deze setting zorgt ervoor dat op elk soort display het dashboard scherp is
+windll.shcore.SetProcessDpiAwareness(1)
 
 bgcolor = "#222831"  # Achtergrond kleur
 font_tuple = ("Montserrat Extra Light", 20)  # Font
@@ -48,7 +52,8 @@ def gamewindow():
     gamelijst.pack(side=LEFT, padx=12, fill='y', pady=10)
     gamelijst.configure(font=("Montserrat Extra Light", 16), bg=bgcolor, fg='White',
                         activestyle='none', borderwidth=0, highlightthickness=0, selectbackground='#003A6E')
-    gamelijst.bind('<<ListboxSelect>>', getselectedelement)  # Als een item geselecteerd is dan word de functie gecalled
+    # Als een item geselecteerd is dan word de functie gecalled
+    gamelijst.bind('<<ListboxSelect>>', getselectedelement)
 
     i = 0
     len_max = 0
