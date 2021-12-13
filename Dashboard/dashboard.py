@@ -1,6 +1,6 @@
 from tkinter import *
 import json
-from tkinter import ttk
+
 from ctypes import windll
 
 
