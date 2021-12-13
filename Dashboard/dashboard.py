@@ -2,6 +2,9 @@ from tkinter import *
 import json
 from tkinter import ttk
 from ctypes import windll
+import config
+
+steam_api_key = config.api_key
 
 # Deze setting zorgt ervoor dat op elk soort display het dashboard scherp is
 windll.shcore.SetProcessDpiAwareness(1)
