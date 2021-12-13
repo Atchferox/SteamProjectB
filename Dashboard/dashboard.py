@@ -10,7 +10,7 @@ bgcolor = "#222831"  # Achtergrond kleur
 font_tuple = ("Montserrat Extra Light", 20)  # Font
 
 
-with open('Dashboard/deelsteam.json', 'r') as f:
+with open('deelsteam.json', 'r') as f:
     data = json.load(f)
     eerstespel = data[0]["name"]
 
