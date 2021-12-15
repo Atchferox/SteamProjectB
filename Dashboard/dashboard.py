@@ -28,16 +28,18 @@ def sorting_data(databestand):
     sortdict = sorted(dic.items(), key=lambda x: x[1])
     return sortdict
 
+
 def getselectedelement(event):
     selection = event.widget.curselection()
     index = selection[0]
     value = event.widget.get(index)
-    produce_bar(value) #Diagrammen bij het geselecteerde spel worden opgehaald
+    produce_bar(value)  # Diagrammen bij het geselecteerde spel worden opgehaald
     return value
+
 
 def produce_bar(value):
     '''Maakt een tabel voor het weergeven van het percentage van positieve / negatieve reviews'''
-    try: #Voor in het geval dat er nog geen diagram wordt getoond
+    try:  # Voor in het geval dat er nog geen diagram wordt getoond
         clear_figures()
         pass
     except NameError:
@@ -51,7 +53,7 @@ def produce_bar(value):
         # Voegt de naam en de release date en appid! toe aan een dictionary
         dic[data[i]['name']] = data[i]['release_date'], data[i]['appid']
         i += 1
-
+    f.close()
     appid = dic[value][1]
 
     request = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
@@ -70,9 +72,11 @@ def produce_bar(value):
     canvas.draw()
     canvas.get_tk_widget().pack(pady=100)
 
+
 def clear_figures():
     '''Maakt de canvas van de staafdiagram leeg'''
     canvas.get_tk_widget().destroy()
+
 
 def gamewindow():
 
