@@ -21,7 +21,7 @@ def sorting_data(databestand):
     dic = {}
     while i < len(data):
         # Voegt de naam en de release date toe aan een dictionary
-        dic[data[i]['name']] = data[i]['release_date']
+        dic[data[i]['name']] = data[i]['release_date'], data[i]['appid']
         i += 1
 
     # Sorteert de dictionary aan de hand van de values
@@ -29,79 +29,80 @@ def sorting_data(databestand):
     return sortdict
 
 
-def getselectedelement(event):
-    selection = event.widget.curselection()
-    index = selection[0]
-    value = event.widget.get(index)
-    produce_bar(value)  # Diagrammen bij het geselecteerde spel worden opgehaald
-    return value
-
-
-def produce_bar(value):
-    '''Maakt een tabel voor het weergeven van het percentage van positieve / negatieve reviews'''
-    try:  # Voor in het geval dat er nog geen diagram wordt getoond
-        clear_figures()
-        pass
-    except NameError:
-        pass
-
-    f = open('deelsteam.json', 'r')
-    data = json.load(f)
-    i = 0
-    dic = {}
-    while i < len(data):
-        # Voegt de naam en de release date en appid! toe aan een dictionary
-        dic[data[i]['name']] = data[i]['release_date'], data[i]['appid']
-        i += 1
-    f.close()
-    appid = dic[value][1]
-
-    request = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
-    data = request.json()
-
-    names = ['Positive reviews', 'Negative reviews']
-    values = [(data['positive'] / (data['positive'] + data['negative'])) * 100,
-              (data['negative'] / (data['positive'] + data['negative'])) * 100]
-
-    review_bar = Figure(figsize=(5, 4), dpi=100)
-    review_bar.add_subplot(111).bar(names, values)
-    review_bar.suptitle('Reviews')
-
-    global canvas
-    canvas = FigureCanvasTkAgg(review_bar, dashboardwindow)
-    canvas.draw()
-    canvas.get_tk_widget().pack(pady=100)
-
-
-def clear_figures():
-    '''Maakt de canvas van de staafdiagram leeg'''
-    canvas.get_tk_widget().destroy()
-
-
 def gamewindow():
 
     sortdictforgame = sorting_data(data)
 
-    win = Toplevel()
-    win.configure(bg=bgcolor)
-    win.title("Library")
-    win.state('zoomed')
-    scrollbar = Scrollbar(win)
+    def produce_bar(value):
+        '''Maakt een tabel voor het weergeven van het percentage van positieve / negatieve reviews'''
+        try:  # Voor in het geval dat er nog geen diagram wordt getoond
+            clear_figures()
+
+        except NameError:
+            pass
+
+        f = open('deelsteam.json', 'r')
+        data = json.load(f)
+        i = 0
+        dic = {}
+        while i < len(data):
+            # Voegt de naam en de release date en appid! toe aan een dictionary
+            dic[data[i]['name']] = data[i]['release_date'], data[i]['appid']
+            i += 1
+        f.close()
+
+        appid = dic[value][1]
+
+        request = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
+        apidata = request.json()
+
+        names = ['Positive reviews', 'Negative reviews']
+        values = [(apidata['positive'] / (apidata['positive'] + apidata['negative'])) * 100,
+                  (apidata['negative'] / (apidata['positive'] + apidata['negative'])) * 100]
+
+        review_bar = Figure(figsize=(5, 6), dpi=100)
+        review_bar.add_subplot(111).bar(names, values)
+        review_bar.suptitle('Reviews', color='white')
+        review_bar.set_facecolor(bgcolor)
+
+        global canvas
+        canvas = FigureCanvasTkAgg(review_bar, librarywin)
+
+        canvas.draw()
+        
+        canvas.get_tk_widget().pack(pady=100, side=LEFT, anchor=N)
+
+    def clear_figures():
+        '''Maakt de canvas van de staafdiagram leeg'''
+        canvas.get_tk_widget().destroy()
+
+    def getselectedelement(event):
+        selection = event.widget.curselection()
+        index = selection[0]
+        value = event.widget.get(index)
+        produce_bar(value)  # Diagrammen bij het geselecteerde spel worden opgehaald
+
+    librarywin = Toplevel()  # Maakt top level window
+    librarywin.configure(bg=bgcolor)
+    librarywin.title("Library")
+    librarywin.state('zoomed')
+    scrollbar = Scrollbar(librarywin)  # Voegt een scrollbar toe
 
     scrollbar.pack(side=LEFT, fill='y')
 
-    gamelijst = Listbox(win)
+    gamelijst = Listbox(librarywin)
     gamelijst.pack(side=LEFT, padx=12, fill='y', pady=10)
     gamelijst.configure(font=("Montserrat Extra Light", 16), bg=bgcolor, fg='White',
                         activestyle='none', borderwidth=0, highlightthickness=0, selectbackground='#003A6E')
     # Als een item geselecteerd is dan word de functie gecalled
-    gamelijst.bind('<<ListboxSelect>>', getselectedelement)
+    gamelijst.bind('<<ListboxSelect>>', getselectedelement)  # Als een item word geselecteerd
 
     i = 0
     len_max = 0
     for key, x in sortdictforgame:
-        gamelijst.insert(i, key)
+        gamelijst.insert(i, key)  # Insert de namen in de listbox
         i += 1
+        # Dit maakt de lengte van de listbox. Word nog aangepast naar een functie die een scrollbar toevoegt als de namen lang zijn.
         if len(key) > len_max:
             len_max = len(key)
 
