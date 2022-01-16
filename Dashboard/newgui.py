@@ -10,19 +10,19 @@ with open('deelsteam.json', 'r') as f:
 
 menu_def = [['Steam', ['Friends::friendskey', 'Help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
             ['Library', ['Games']]
-            ]
+            ]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
 layout = [
     [sg.Menu(menu_def)],
-    [sg.Text(eerstespel, justification='center', font=font)]
-]
+    [sg.Text(eerstespel, font=font)]
+
+]  # Hoe de window eruit moet zien.
 
 
-window = sg.Window('Steam', layout, resizable=True).maximize()
-window.maximize()
+window = sg.Window('Steam', layout, finalize=True, resizable=True)  # Creert de window
 
 
-while True:
+while True:  # While loop om de gegevens uit de window te lezen en acties uit te voeren.
     event, values = window.read()
 
     if event == 'Exit::exitkey':
