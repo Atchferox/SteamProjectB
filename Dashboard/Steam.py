@@ -1,8 +1,11 @@
-import PySimpleGUI as sg
+import PySimpleGUI as sg  # pip install PySimpleGUI
 import json
+from ctypes import windll
+# Hierdoor is het op elk scherm high definition
+windll.shcore.SetProcessDpiAwareness(1)
 
 sg.theme('darkgray10')
-font = ("Montserrat Extra Light", 20)
+font = ("Montserrat Extra Light", 20)  # test font
 
 with open('deelsteam.json', 'r') as f:
     data = json.load(f)
@@ -25,15 +28,14 @@ def Gamewindow():
     sortdictforgame = sorting_data(data)
     len_max = 0
     gamelijst = []
-    for name, x in sortdictforgame:
+    for name, _ in sortdictforgame:
         gamelijst.append(name)  # Insert de namen in de listbox
 
-        # Dit maakt de lengte van de listbox. Word nog aangepast naar een functie die een scrollbar toevoegt als de namen lang zijn.
         if len(name) > len_max:
             len_max = len(name)
 
     layout2 = [
-        [sg.Text('Dit is het gameswindow', font=font)],
+        [sg.Text('Dit is de gameswindow', font=font)],
         [sg.Listbox(
             values=gamelijst, size=(len_max, len(gamelijst)),
             font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_g', bind_return_key=True,
