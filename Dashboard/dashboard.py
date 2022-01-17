@@ -2,8 +2,9 @@ from tkinter import *
 import json
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import requests
 from ctypes import windll
+
+import API
 
 # Deze setting zorgt ervoor dat op elk soort display het dashboard scherp is
 windll.shcore.SetProcessDpiAwareness(1)
@@ -53,13 +54,11 @@ def gamewindow():
 
         appid = dic[value][1]
 
-        request = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
-        apidata = request.json()
-
+        pos, neg = API.get_reviews(appid)
+        values = [(pos / pos + neg) * 100,
+                  (neg / pos + neg) * 100]
         names = ['Positive reviews', 'Negative reviews']
-        values = [(apidata['positive'] / (apidata['positive'] + apidata['negative'])) * 100,
-                  (apidata['negative'] / (apidata['positive'] + apidata['negative'])) * 100]
-
+        
         review_bar = Figure(figsize=(5, 6), dpi=100)
         review_bar.add_subplot(111).bar(names, values)
         review_bar.suptitle('Reviews', color='white')
