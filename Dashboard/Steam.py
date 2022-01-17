@@ -36,9 +36,8 @@ def Gamewindow():
         [sg.Text('Dit is het gameswindow', font=font)],
         [sg.Listbox(
             values=gamelijst, size=(len_max, len(gamelijst)),
-            font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_g', enable_events=True)
-         ]
-    ]
+            font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_g', bind_return_key=True,
+            enable_events=True)]]
     return sg.Window('Games', layout2, finalize=True, resizable=True)
 
 
@@ -60,7 +59,7 @@ def sorting_data(data):
 
 while True:
     window, event, values = sg.read_all_windows()
-    print(window, event, values)
+
     if event == sg.WIN_CLOSED or event == 'Exit::exitkey':
         window.close()
 
@@ -72,5 +71,8 @@ while True:
 
     elif event == 'Games::Gameskey' and not window2:
         window2 = Gamewindow()
+
+    elif event == 'listbox_g':
+        print(values[event])
 
 window.close()
