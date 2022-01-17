@@ -17,18 +17,18 @@ def dashboard():
                 ['Library', ['Games::Gameskey']]
                 ]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
     layout = [
-        [sg.Menu(menu_def)],
-        [sg.Text(eerstespel, font=font)]
+        [sg.Menu(menu_def)]
+
     ]
 
-    return sg.Window('Dashboard', layout, finalize=True, resizable=True)
+    return sg.Window('Dashboard', layout, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
-def Gamewindow():
-    sortdictforgame = sorting_data(data)
+def Game_window():
+    sortdic
     len_max = 0
     gamelijst = []
-    for name, _ in sortdictforgame:
+    for name in sortdic:
         gamelijst.append(name)  # Insert de namen in de listbox
 
         if len(name) > len_max:
@@ -40,23 +40,26 @@ def Gamewindow():
             values=gamelijst, size=(len_max, len(gamelijst)),
             font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_g', bind_return_key=True,
             enable_events=True)]]
-    return sg.Window('Games', layout2, finalize=True, resizable=True)
+    return sg.Window('Games', layout2, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
-dashboard, window2 = dashboard(), None
+def friend_window():
+    layout3 = [[sg.Text('Friends')]]
+    return sg.Window('Friends', layout3, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
 def sorting_data(data):
     i = 0
     dic = {}
     while i < len(data):
-        # Voegt de naam en de release date toe aan een dictionary
-        dic[data[i]['name']] = data[i]['release_date'], data[i]['appid']
+        # Voegt de naam en de app id toe aan een dictionary
+        dic[data[i]['name']] = data[i]['appid']
         i += 1
 
-    # Sorteert de dictionary aan de hand van de values
-    sortdict = sorted(dic.items(), key=lambda x: x[1])
-    return sortdict
+    return dic
+
+
+dashboard, window2, window3 = dashboard(), None, None
 
 
 while True:
@@ -68,13 +71,23 @@ while True:
         if window == window2:
             window2 = None
 
+        elif window == window3:
+            window3 = None
+
         elif window == dashboard:
             break
 
-    elif event == 'Games::Gameskey' and not window2:
-        window2 = Gamewindow()
+    elif event == 'Games::Gameskey' and not window2:  # Opent window 2
+        sortdic = sorting_data(data)
+        window2 = Game_window()
 
-    elif event == 'listbox_g':
-        print(values[event])
+    elif event == 'listbox_g':  # Window 2
+        name = values[event]
+        keydic = name[0]
+        app_id = sortdic[keydic]
+
+    elif event == 'Friends::friendskey' and not window3:
+        window3 = friend_window()
+
 
 window.close()
