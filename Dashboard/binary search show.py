@@ -28,10 +28,60 @@ def sorting_data(databestand):
     sortdict = sorted(dic.items(), key=lambda x: x[1])
     return sortdict
 
-
 def gamewindow():
-
     sortdictforgame = sorting_data(data)
+    print(sortdictforgame)
+
+    # Alfabetische lijst van spellen voor binary search
+    alfa_gamelijst_unsorted = []
+    for i in sortdictforgame:
+        spelnaam = i[0].lower()
+        alfa_gamelijst_unsorted.append(spelnaam)
+    alfa_gamelijst_sorted = alfa_gamelijst_unsorted.copy()
+    alfa_gamelijst_sorted.sort()
+
+    dic_id = {}
+    for i in sortdictforgame:
+        naam = i[0]
+        id = i[1][1]
+        dic_id[naam] = id
+
+    def binary_search():
+        '''Binary search in spellen lijst'''
+        gamelijst.selection_clear(0, 'end')
+        left = 0
+        right = len(alfa_gamelijst_sorted) - 1
+
+        naamentry = searchbar.get()
+        print(naamentry)
+
+        while left <= right:
+            avg = int(left + (right - left) / 2)
+
+            if alfa_gamelijst_sorted[avg] == naamentry:
+                print(f'naam gevonden: {alfa_gamelijst_sorted[avg]}')
+
+                value = alfa_gamelijst_sorted[avg]
+                list_index = alfa_gamelijst_unsorted.index(value)
+                gamelijst.selection_set(list_index)
+
+                for i in dic_id:
+                    lower_case_value = i.lower()
+                    if value == lower_case_value:
+                        value = i
+                        break
+                    else:
+                        continue
+
+                produce_bar(value)
+                break
+            elif alfa_gamelijst_sorted[avg] < naamentry:
+                left = left + 1
+            elif alfa_gamelijst_sorted[avg] > naamentry:
+                right = right - 1
+        else:
+            print('not found')
+        return
 
     def produce_bar(value):
         '''Maakt een tabel voor het weergeven van het percentage van positieve / negatieve reviews'''
@@ -41,17 +91,7 @@ def gamewindow():
         except NameError:
             pass
 
-        f = open('deelsteam.json', 'r')
-        data = json.load(f)
-        i = 0
-        dic = {}
-        while i < len(data):
-            # Voegt de naam en de release date en appid! toe aan een dictionary
-            dic[data[i]['name']] = data[i]['release_date'], data[i]['appid']
-            i += 1
-        f.close()
-
-        appid = dic[value][1]
+        appid = dic_id[value]
 
         request = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
         apidata = request.json()
@@ -69,7 +109,7 @@ def gamewindow():
         canvas = FigureCanvasTkAgg(review_bar, librarywin)
 
         canvas.draw()
-        
+
         canvas.get_tk_widget().pack(pady=100, side=LEFT, anchor=N)
 
     def clear_figures():
@@ -97,6 +137,13 @@ def gamewindow():
     # Als een item geselecteerd is dan word de functie gecalled
     gamelijst.bind('<<ListboxSelect>>', getselectedelement)  # Als een item word geselecteerd
 
+    searchbar = Entry(librarywin)
+    searchbar.pack(side=TOP)
+
+    searchbutton = Button(librarywin, text='Zoek')
+    searchbutton.config(command=binary_search)
+    searchbutton.pack(side=TOP)
+
     i = 0
     len_max = 0
     for key, x in sortdictforgame:
@@ -117,7 +164,6 @@ menubar = Menu()
 dashboardwindow.title("Dashboard")  # Title van de window
 dashboardwindow.state('zoomed')  # Fullscreen
 
-
 # Standaard achtergrond kleur
 dashboardwindow.configure(menu=menubar, background=bgcolor)
 
@@ -130,7 +176,6 @@ label1.pack(pady=12)
 label2 = Label()
 label2.configure(font=(font_tuple), bg=bgcolor, fg='white')
 label2.pack()
-
 
 steam_menu = Menu(menubar, tearoff=0)  # Maakt het steam menu
 games_menu = Menu(menubar, tearoff=0)  # Maakt het games menu
@@ -156,7 +201,6 @@ menubar.add_cascade(
     label="Games",
     menu=games_menu
 )
-
 
 if __name__ == '__main__':
     mainloop()
