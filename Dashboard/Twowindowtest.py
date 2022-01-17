@@ -1,4 +1,3 @@
-from sys import maxsize
 import PySimpleGUI as sg
 import json
 
@@ -23,9 +22,9 @@ def dashboard():
 
 
 def Gamewindow():
-    layout2 = [[sg.Text('Dit is window2')]
+    layout2 = [[sg.Text('Dit is het gameswindow', font=font)]
                ]
-    return sg.Window('windoow2', layout2, finalize=True, resizable=True)
+    return sg.Window('Games', layout2, finalize=True, resizable=True)
 
 
 dashboard, window2 = dashboard(), None
@@ -45,3 +44,4 @@ while True:
         window2 = Gamewindow()
 
 window.close()
+
