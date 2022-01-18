@@ -23,7 +23,7 @@ def get_background(appid: int):
     r = requests.get(f'https://store.steampowered.com/api/appdetails/?appids={appid}')
     r = r.json()
 
-    background = r['background']
+    background = r[str(appid)]['data']['background']
     img = Image.open(BytesIO(background.content))
 
     return img
