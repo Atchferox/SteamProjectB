@@ -10,10 +10,6 @@ sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 20)  # test font
 font2 = ("Montserrat Extra Light", 14)
 
-with open('deelsteam.json', 'r') as f:
-    data = json.load(f)
-    eerstespel = data[0]["name"]
-
 
 def get_steamid(userid):
     request = requests.get(
@@ -22,7 +18,7 @@ def get_steamid(userid):
     return data2['response']['steamid']
 
 
-def game_lijst():
+'''def game_lijst():
     sortdic = sorting_data(data)
     len_max = 0
     gamelijst = []
@@ -31,7 +27,7 @@ def game_lijst():
 
         if len(name) > len_max:
             len_max = len(name)
-    return gamelijst, len_max
+    return gamelijst, len_max''' 
 
 
 def top100games():
@@ -67,14 +63,10 @@ def dashboard():
 
 
 def Game_window():
-    gamelijst, len_max = game_lijst()
 
     layout2 = [
         [sg.Text('Jouw Games', font=font)],
-        [sg.Listbox(
-            values=gamelijst, size=(len_max, len(gamelijst)),
-            font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_g', bind_return_key=True,
-            enable_events=True)]]
+        [sg.Text('Deze functie is nog in ontwikkeling')]]
 
     return sg.Window('Games', layout2, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
@@ -122,13 +114,11 @@ while True:
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
 
     elif event == 'Games::Gameskey' and not window2:  # Opent window 2
-        sortdic = sorting_data(data)
         window2 = Game_window()
 
     elif event == 'listbox_g':  # Window 2
         name = values[event]
         keydic = name[0]
-        app_id = sortdic[keydic]
 
     elif event == 'Friends::friendskey' and not window3:  # Opent window 3
         window3 = friend_window()
