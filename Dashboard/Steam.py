@@ -1,15 +1,13 @@
-
 import PySimpleGUI as sg  # pip install PySimpleGUI
-import json
 from ctypes import windll
-import requests
+from API.API import *
+
 # Hierdoor is het op elk scherm high definition
 windll.shcore.SetProcessDpiAwareness(1)
 
 sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 20)  # test font
 font2 = ("Montserrat Extra Light", 14)
-
 
 
 '''def game_lijst():
@@ -21,7 +19,7 @@ font2 = ("Montserrat Extra Light", 14)
 
         if len(name) > len_max:
             len_max = len(name)
-    return gamelijst, len_max''' 
+    return gamelijst, len_max'''
 
 
 def dashboard():

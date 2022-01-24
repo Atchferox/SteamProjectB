@@ -92,5 +92,4 @@ def get_background(appid: int):
 
     background = r[str(appid)]['data']['background']
     img = Image.open(BytesIO(background.content))
-
     return img
