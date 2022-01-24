@@ -11,12 +11,6 @@ font = ("Montserrat Extra Light", 20)  # test font
 font2 = ("Montserrat Extra Light", 14)
 
 
-def get_steamid(userid):
-    request = requests.get(
-        f'https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&vanityurl={userid}')
-    data2 = request.json()
-    return data2['response']['steamid']
-
 
 '''def game_lijst():
     sortdic = sorting_data(data)
@@ -28,21 +22,6 @@ def get_steamid(userid):
         if len(name) > len_max:
             len_max = len(name)
     return gamelijst, len_max''' 
-
-
-def top100games():
-    requesttopgames = requests.get(
-        'https://steamspy.com/api.php?request=top100in2weeks'
-    )
-    data = requesttopgames.json()
-    listofgames = []
-    max_len = 0  # Deze max_len heb ik nodig om de lengte van de listbox te bepalen later
-    for key in data:
-        # Haalt de naam van de spelletjes uit de request en zet het in een lijst
-        listofgames.append(data[key]['name'])
-        if len(data[key]['name']) > max_len:
-            max_len = len(data[key]['name'])
-    return listofgames, max_len
 
 
 def dashboard():

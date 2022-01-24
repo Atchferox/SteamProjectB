@@ -33,6 +33,24 @@ def get_steamspy(appid: int, data: str):
         except KeyError: #throws an error if the data variable is not a valid choice
             raise KeyError("Requested data not found")
 
+def top100games():
+    r = requests.get('https://steamspy.com/api.php?request=top100in2weeks')
+    data = r.json()
+    listofgames = []
+    max_len = 0  #Necessary in steam.py
+    for key in data:
+        #Puts the name of the game in listofgames
+        listofgames.append(data[key]['name'])
+        if len(data[key]['name']) > max_len: #Sets max_len as the highest amount of characters in a game name
+            max_len = len(data[key]['name'])
+    return listofgames, max_len
+
+def get_steamid(vanity: str):
+    r = requests.get(f'https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&vanityurl={vanity}')
+    data = r.json()
+    steamid = data['response']['steamid']
+    return steamid
+
 def get_friends(steamid: int):
     """
     Fetches list of given users friends' names
