@@ -8,10 +8,18 @@ windll.shcore.SetProcessDpiAwareness(1)
 
 sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 20)  # test font
+font2 = ("Montserrat Extra Light", 14)
 
 with open('deelsteam.json', 'r') as f:
     data = json.load(f)
     eerstespel = data[0]["name"]
+
+
+def get_steamid(userid):
+    request = requests.get(
+        f'https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&vanityurl={userid}')
+    data2 = request.json()
+    return data2['response']['steamid']
 
 
 def game_lijst():
@@ -27,11 +35,14 @@ def game_lijst():
 
 
 def top100games():
-    request = requests.get('https://steamspy.com/api.php?request=top100in2weeks')
-    data = request.json()
+    requesttopgames = requests.get(
+        'https://steamspy.com/api.php?request=top100in2weeks'
+    )
+    data = requesttopgames.json()
     listofgames = []
-    max_len = 0
+    max_len = 0  # Deze max_len heb ik nodig om de lengte van de listbox te bepalen later
     for key in data:
+        # Haalt de naam van de spelletjes uit de request en zet het in een lijst
         listofgames.append(data[key]['name'])
         if len(data[key]['name']) > max_len:
             max_len = len(data[key]['name'])
@@ -47,8 +58,8 @@ def dashboard():
         [sg.Menu(menu_def)],
         [sg.Text('Top 100 Games van de afgelopen 2 weken', font=font)],
         [sg.Listbox(
-            values=topgames, size=(max_len, len(topgames)),
-            font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
+            values=topgames, size=(max_len, len(topgames)), font=font2,
+            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
             enable_events=True)]
     ]
 
@@ -69,9 +80,10 @@ def Game_window():
 
 
 def friend_window():
-    layout3 = [[sg.Text('Friends', font=font)],
-               [sg.Text('Search for Friends')],
-               [sg.Input(do_not_clear=False, key='-INPUT-'), sg.Button('Search')],
+    layout3 = [[sg.Text('Vriendenlijst', font=font)],
+               [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
+               [sg.Input(do_not_clear=False, key='-INPUT-'),
+                sg.Button('Search')],
                [sg.Text(key='-OUTPUT-')]
                ]
 
@@ -122,9 +134,11 @@ while True:
         window3 = friend_window()
 
     elif event == 'Search':
+
         if not values['-INPUT-']:
             window['-OUTPUT-'].update(f"Results: \nName not found")
         else:
+            steamid = get_steamid(values['-INPUT-'])
 
             window['-OUTPUT-'].update(f"Results: \n{values['-INPUT-']}")
 
