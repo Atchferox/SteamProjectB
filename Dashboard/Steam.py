@@ -1,21 +1,17 @@
-
 import PySimpleGUI as sg  # pip install PySimpleGUI
-import json
 from ctypes import windll
-import requests
+from API.API import *
+
 # Hierdoor is het op elk scherm high definition
 windll.shcore.SetProcessDpiAwareness(1)
 
 sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 20)  # test font
-
-with open('deelsteam.json', 'r') as f:
-    data = json.load(f)
-    eerstespel = data[0]["name"]
+font2 = ("Montserrat Extra Light", 14)
 
 
-def game_lijst():
-    sortdic
+'''def game_lijst():
+    sortdic = sorting_data(data)
     len_max = 0
     gamelijst = []
     for name in sortdic:
@@ -23,47 +19,42 @@ def game_lijst():
 
         if len(name) > len_max:
             len_max = len(name)
-    return gamelijst, len_max
-
-
-def top100games():
-    request = requests.get('https://steamspy.com/api.php?request=top100in2weeks')
-    data = request.json()
-    listofgames = []
-    for key in data:
-        listofgames.append(data[key]['name'])
-    return listofgames
+    return gamelijst, len_max'''
 
 
 def dashboard():
-    menu_def = [['Steam', ['Friends::friendskey', 'Help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
-                ['Library', ['Games::Gameskey']]
-                ]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
+    topgames, max_len = top100games()
+
+    menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
+                ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
     layout = [
-        [sg.Menu(menu_def)]
-        
+        [sg.Menu(menu_def)],
+        [sg.Text('Top 100 Games van de afgelopen 2 weken', font=font)],
+        [sg.Listbox(
+            values=topgames, size=(max_len, len(topgames)), font=font2,
+            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
+            enable_events=True)]
     ]
 
     return sg.Window('Dashboard', layout, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
 def Game_window():
-    gamelijst, len_max = game_lijst()
 
     layout2 = [
-        [sg.Text('Dit is de gameswindow', font=font)],
-        [sg.Listbox(
-            values=gamelijst, size=(len_max, len(gamelijst)),
-            font=font, select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_g', bind_return_key=True,
-            enable_events=True)]]
+        [sg.Text('Jouw Games', font=font)],
+        [sg.Text('Deze functie is nog in ontwikkeling')]]
 
     return sg.Window('Games', layout2, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
 def friend_window():
-    layout3 = [[sg.Text('Friends', font=font)],
-               [sg.Text('Search for friends')],
-               [sg.Input(do_not_clear=False, key='-INPUT-'), sg.Button('Search')]]
+    layout3 = [[sg.Text('Vriendenlijst', font=font)],
+               [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
+               [sg.Input(do_not_clear=False, key='-INPUT-'),
+                sg.Button('Search')],
+               [sg.Text(key='-OUTPUT-')]
+               ]
 
     return sg.Window('Friends', layout3, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
@@ -96,21 +87,27 @@ while True:
 
         elif window == dashboard:
             break
+    elif event == 'Help::help':
+        sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
 
     elif event == 'Games::Gameskey' and not window2:  # Opent window 2
-        sortdic = sorting_data(data)
         window2 = Game_window()
 
     elif event == 'listbox_g':  # Window 2
         name = values[event]
         keydic = name[0]
-        app_id = sortdic[keydic]
 
     elif event == 'Friends::friendskey' and not window3:  # Opent window 3
         window3 = friend_window()
 
     elif event == 'Search':
-        print(values['-INPUT-'])
+
+        if not values['-INPUT-']:
+            window['-OUTPUT-'].update(f"Results: \nName not found")
+        else:
+            steamid = get_steamid(values['-INPUT-'])
+
+            window['-OUTPUT-'].update(f"Results: \n{values['-INPUT-']}")
 
 
 window.close()
