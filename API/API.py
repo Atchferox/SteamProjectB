@@ -34,6 +34,9 @@ def get_steamspy(appid: int, data: str):
             raise KeyError("Requested data not found")
 
 def top100games():
+    """
+    Fetches the top 100 games on steam in the past 2 weeks as list
+    """
     r = requests.get('https://steamspy.com/api.php?request=top100in2weeks')
     data = r.json()
     listofgames = []
@@ -65,6 +68,18 @@ def get_friends(steamid: int):
     userdata = userdata.json()
     names = [player["personaname"] for player in userdata["response"]["players"]] #List comprehension to get a list of names
     return names
+
+def get_games(steamid: int):
+    """
+    Fetches list of given users' games, returns list of gameids
+    """
+    r = requests.get(f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545')
+    r = r.json()
+
+    gameslist = r["response"]["games"]
+    sortedgames = sorted(gameslist, key=lambda d: d["playtime_forever"], reverse=True)
+    gameids = [game["appid"] for game in sortedgames[:10]]
+    return gameids
 
 
 def get_background(appid: int):
