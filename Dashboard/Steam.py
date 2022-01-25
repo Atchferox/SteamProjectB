@@ -134,8 +134,12 @@ while True:
         window4 = friend_window()
         steamname = values['-OUTPUT-']
         keydicname = steamname[0]
-        steamid1 = search_name(keydicname, name_steamid)
-        print(steamid1)
+
+        steamid1 = search_name(keydicname, name_steamid)  # Geeft steamid om de lijst van games te krijgen
+        gameidlijst = get_games(steamid1)
+        gamelijst = get_game_names(gameidlijst)
+        
+        
 
 
 window.close()
