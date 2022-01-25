@@ -3,6 +3,7 @@ from xml.dom.minidom import Attr
 import PySimpleGUI as sg  # pip install PySimpleGUI
 from ctypes import windll
 from API.API import *
+import concurrent
 
 # Hierdoor is het op elk scherm high definition
 windll.shcore.SetProcessDpiAwareness(1)
@@ -66,7 +67,9 @@ def friend_list_window():
 
 def friend_window():
 
-    layout4 = [[sg.Text('niks')]]
+    layout4 = [[sg.Listbox(values=['geen games'], key='-GAMES-', size=(30, 10))],
+               [sg.Text(key='-gekke-')]
+               ]
 
     return sg.Window('Friend Games', layout4, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
 
@@ -136,9 +139,8 @@ while True:
         keydicname = steamname[0]
 
         steamid1 = search_name(keydicname, name_steamid)  # Geeft steamid om de lijst van games te krijgen
-        gameidlijst = get_games(steamid1)
-        gamelijst = get_game_names(gameidlijst)
-        
+        gameidlijst, gamenames = get_games(steamid1)
+
         
 
 
