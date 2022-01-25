@@ -2,6 +2,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 
+
 def get_steamspy(appid: int, data: str):
     """
     Fetches requested data from Steamspy. \n\n
@@ -21,7 +22,7 @@ def get_steamspy(appid: int, data: str):
     """
     r = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
     r = r.json()
-    if data == "reviews": #if statement since reviews is the only 'special' data
+    if data == "reviews":  # if statement since reviews is the only 'special' data
         pos = r['positive']
         neg = r['negative']
 
@@ -30,8 +31,9 @@ def get_steamspy(appid: int, data: str):
         try:
             return_data = r[data]
             return return_data
-        except KeyError: #throws an error if the data variable is not a valid choice
+        except KeyError:  # throws an error if the data variable is not a valid choice
             raise KeyError("Requested data not found")
+
 
 def top100games():
     """
@@ -40,40 +42,52 @@ def top100games():
     r = requests.get('https://steamspy.com/api.php?request=top100in2weeks')
     data = r.json()
     listofgames = []
-    max_len = 0  #Necessary in steam.py
+    max_len = 0  # Necessary in steam.py
     for key in data:
-        #Puts the name of the game in listofgames
+        # Puts the name of the game in listofgames
         listofgames.append(data[key]['name'])
-        if len(data[key]['name']) > max_len: #Sets max_len as the highest amount of characters in a game name
+        if len(data[key]['name']) > max_len:  # Sets max_len as the highest amount of characters in a game name
             max_len = len(data[key]['name'])
     return listofgames, max_len
 
+
 def get_steamid(vanity: str):
-    r = requests.get(f'https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&vanityurl={vanity}')
+    r = requests.get(
+        f'https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&vanityurl={vanity}')
     data = r.json()
     steamid = data['response']['steamid']
     return steamid
+
 
 def get_friends(steamid: int):
     """
     Fetches list of given users friends' names
     """
-    r = requests.get(f'https://api.steampowered.com/ISteamUser/GetFriendList/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545')
+    r = requests.get(
+        f'https://api.steampowered.com/ISteamUser/GetFriendList/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545')
     r = r.json()
 
     friends = r["friendslist"]["friends"]
-    friendids = [friend["steamid"] for friend in friends[:20]] #List comprehension to get a list of IDs
-    string = ",".join(friendids)
-    userdata = requests.get(f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?steamids={string}&key=2FA40FBA36691E988C1AC28FCDAE2545')
+    friendids = [friend["steamid"] for friend in friends[:20]]  # List comprehension to get a list of IDs
+    string = ",".join(friendids)  # for API CALL
+    userdata = requests.get(
+        f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?steamids={string}&key=2FA40FBA36691E988C1AC28FCDAE2545')
     userdata = userdata.json()
-    names = [player["personaname"] for player in userdata["response"]["players"]] #List comprehension to get a list of names
-    return names
+    names = [player["personaname"] for player in userdata["response"]
+             ["players"]]  # List comprehension to get a list of names
+
+    i = 0
+    name_steamid = dict(zip(names, friendids))
+
+    return names, name_steamid
+
 
 def get_games(steamid: int):
     """
     Fetches list of given users' games, returns list of gameids
     """
-    r = requests.get(f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545')
+    r = requests.get(
+        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545')
     r = r.json()
 
     gameslist = r["response"]["games"]

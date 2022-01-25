@@ -1,3 +1,5 @@
+from tokenize import Name
+from xml.dom.minidom import Attr
 import PySimpleGUI as sg  # pip install PySimpleGUI
 from ctypes import windll
 from API.API import *
@@ -48,18 +50,28 @@ def Game_window():
     return sg.Window('Games', layout2, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
+def friend_list_window():
+    layout3 = [
+        [sg.Text('Vriendenlijst', font=font)],
+        [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
+        [sg.Input(do_not_clear=False, key='-INPUT-'),
+         sg.Button('Search')],
+        [sg.Listbox(
+            key='-OUTPUT-', values=[],
+            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+            size=(30, 20))]]
+
+    return sg.Window('Friends', layout3, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
+
+
 def friend_window():
-    layout3 = [[sg.Text('Vriendenlijst', font=font)],
-               [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
-               [sg.Input(do_not_clear=False, key='-INPUT-'),
-                sg.Button('Search')],
-               [sg.Text(key='-OUTPUT-')]
-               ]
 
-    return sg.Window('Friends', layout3, finalize=True, resizable=True, icon='img/steamlogo.ico')
+    layout4 = [[sg.Text('niks')]]
+
+    return sg.Window('Friend Games', layout4, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
 
 
-def sorting_data(data):
+'''def sorting_data(data):
     i = 0
     dic = {}
     while i < len(data):
@@ -67,16 +79,21 @@ def sorting_data(data):
         dic[data[i]['name']] = data[i]['appid']
         i += 1
 
-    return dic
+    return dic'''
 
 
-dashboard, window2, window3 = dashboard(), None, None
+def search_name(name, dic):
+    return dic[name]
+
+
+window1, window2, window3, window4 = dashboard(), None, None, None
 
 
 while True:
     window, event, values = sg.read_all_windows()
 
     if event == sg.WIN_CLOSED or event == 'Exit::exitkey':
+
         window.close()
 
         if window == window2:
@@ -85,29 +102,40 @@ while True:
         elif window == window3:
             window3 = None
 
-        elif window == dashboard:
+        elif window == window4:
+            window4 = None
+
+        elif window == window1:
             break
+
     elif event == 'Help::help':
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
 
-    elif event == 'Games::Gameskey' and not window2:  # Opent window 2
+    elif event == 'Games::Gameskey' and not window2:  # Opent Game window
         window2 = Game_window()
 
     elif event == 'listbox_g':  # Window 2
         name = values[event]
         keydic = name[0]
 
-    elif event == 'Friends::friendskey' and not window3:  # Opent window 3
-        window3 = friend_window()
+    elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
+        window3 = friend_list_window()
 
     elif event == 'Search':
 
         if not values['-INPUT-']:
-            window['-OUTPUT-'].update(f"Results: \nName not found")
+            window['-OUTPUT-'].update(f"Results: \nName not found")  # Als de naam niet gevonden is
         else:
-            steamid = get_steamid(values['-INPUT-'])
+            steamid = get_steamid(values['-INPUT-'])  # Krijgt de steamid van de naam die is ingevoerd
+            vriendlijst, name_steamid = get_friends(steamid)
+            window['-OUTPUT-'].update(vriendlijst, visible=True)  # Update de listbox van vrienden
 
-            window['-OUTPUT-'].update(f"Results: \n{values['-INPUT-']}")
+    elif event == '-OUTPUT-':  # Als er op een naam word geklikt
+        window4 = friend_window()
+        steamname = values['-OUTPUT-']
+        keydicname = steamname[0]
+        steamid1 = search_name(keydicname, name_steamid)
+        print(steamid1)
 
 
 window.close()
