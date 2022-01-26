@@ -87,17 +87,21 @@ def get_games(steamid: int):
     Fetches list of given users' games, returns list of gameids
     """
     r = requests.get(
-        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545')
+        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545&include_appinfo=true')
     r = r.json()
     try:
         gameslist = r["response"]["games"]
+
     except KeyError:
-        return 'No games'
+        gamenames = None
+        gameid = None
+        return gamenames, gameid
 
     sortedgames = sorted(gameslist, key=lambda d: d["playtime_forever"], reverse=True)
     # laat de 10 meest gespeelde games zien
     gameids = [game["appid"] for game in sortedgames[:10]]
-    return gameids
+    gamenames = [gamename["name"] for gamename in sortedgames[:10]]
+    return gameids, gamenames
 
 
 def get_background(appid: int):
@@ -112,13 +116,3 @@ def get_background(appid: int):
     img = Image.open(BytesIO(background.content))
     return img
 
-
-def get_game_names(gameidlist):
-    gamelist = []
-    for gameid in gameidlist:
-        gamename = requests.get(
-            f"https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&appid={gameid}")
-        gamename = gamename.json()
-        gamelist.append(gamename['game']['gameName'])
-
-    return gamelist
