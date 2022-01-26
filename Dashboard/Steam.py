@@ -61,22 +61,24 @@ def dashboard():
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
                 ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
-    top5gameslayout = [[sg.Text('Top 10 Games van de afgelopen 2 weken', font=font)],
-                       [sg.Listbox(
-                           values=topgames, size=(30, len(topgames)), font=font2,
-                           select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
-                           enable_events=True)]
-                       ]
+    top10gameslayout = [[sg.Text('Top 10 Games van de afgelopen 2 weken', font=font)],
+                        [sg.Listbox(
+                            values=topgames, size=(30, len(topgames)), font=font2,
+                            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
+                            enable_events=True)],
+                        [sg.Text(key='-STATS-', visible=False)]
+                        ]
     search_game = [[sg.Text('Search Games', font=font)],
-                   [sg.Input(size=(25, 20), pad=(12, 12))]
+                   [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')]
                    ]
 
     figure_canvas = [[sg.Canvas(key='-CANVAS-')]]
+
     layout = [
         [sg.Menu(menu_def)],
         [sg.vtop(sg.Frame(title='', layout=search_game)),
          sg.Frame(title='', layout=figure_canvas, border_width=0),
-         sg.vtop(sg.Frame(title='', layout=top5gameslayout, vertical_alignment='RIGHT'))]]
+         sg.vtop(sg.Frame(title='', layout=top10gameslayout, vertical_alignment='RIGHT'))]]
 
     return sg.Window(
         'Dashboard', layout, size=(1280, 720),
@@ -170,7 +172,7 @@ while True:
     elif event == 'Games::Gameskey' and not window2:  # Opent Game window
         window2 = Game_window()
 
-    elif event == 'listbox_t':  # Dashboard listbox
+    elif event == 'listbox_t':  # Dashboard listbox als er op n naam uit de lijst word geklikt
 
         name = values[event][0]
         appid = get_appid(name)
@@ -178,6 +180,12 @@ while True:
         review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
                              (review_values[1] / (review_values[0] + review_values[1])) * 100]
         produce_bar_diagram(review_percentage)
+        avg_playtime = get_steamspy(appid, 'average_forever')
+        players = get_steamspy(appid, 'ccu')
+
+        window['-STATS-'].update(
+            f'Average playtime in minutes: {avg_playtime} \n{players} People played yesterday \n',
+            visible=True, font=font2)
 
     elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
         window3 = friend_list_window()
