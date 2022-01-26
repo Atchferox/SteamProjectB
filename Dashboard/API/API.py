@@ -1,7 +1,14 @@
 import requests
 from PIL import Image
 from io import BytesIO
+import json
 
+def get_appid(name: str):
+    f = open('API/appids.json')
+    dic = json.load(f)
+    appid = dic[f'{name}']
+    f.close()
+    return appid
 
 def get_steamspy(appid: int, data: str):
     """

@@ -5,6 +5,10 @@ from ctypes import windll
 from API.API import *
 import concurrent
 
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 # Hierdoor is het op elk scherm high definition
 windll.shcore.SetProcessDpiAwareness(1)
 
@@ -24,6 +28,13 @@ font2 = ("Montserrat Extra Light", 14)
             len_max = len(name)
     return gamelijst, len_max'''
 
+def draw_figure(canvas, figure):
+    ''''''
+    global figure_canvas_agg
+    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+    return figure_canvas_agg
 
 def dashboard():
     topgames, max_len = top100games()
@@ -33,6 +44,7 @@ def dashboard():
     layout = [
         [sg.Menu(menu_def)],
         [sg.Text('Top 100 Games van de afgelopen 2 weken', font=font)],
+        [sg.Canvas(key='-CANVAS-')],
         [sg.Listbox(
             values=topgames, size=(max_len, len(topgames)), font=font2,
             select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
@@ -41,15 +53,34 @@ def dashboard():
 
     return sg.Window('Dashboard', layout, finalize=True, resizable=True, icon='img/steamlogo.ico')
 
+def produce_bar_diagram(values):
+    '''Maakt staafdiagram'''
+
+    try: #Indien er al een diagram bestaat
+        figure_canvas_agg.get_tk_widget().destroy()
+    except NameError:
+        pass
+
+    names = ['Positieve reviews', 'Negatieve reviews']
+    colors = ['#60B6E7', '#E06363']
+
+    fig = plt.figure(figsize=(3, 3), facecolor='#1C1E23')
+    fig.add_subplot(111).bar(names, values, width=0.4, align='center', color=colors)
+    plt.ylim(0,100)
+    plt.tick_params(colors='white')
+
+    fig_agg = draw_figure(window['-CANVAS-'].TKCanvas, fig)
 
 def Game_window():
 
     layout2 = [
         [sg.Text('Jouw Games', font=font)],
-        [sg.Text('Deze functie is nog in ontwikkeling')]]
+        [sg.Text('Deze functie is nog in ontwikkeling')],
+        [sg.Canvas(key='-CANVAS-')],
+        [sg.Button('123')]
+    ]
 
     return sg.Window('Games', layout2, finalize=True, resizable=True, icon='img/steamlogo.ico')
-
 
 def friend_list_window():
     layout3 = [
@@ -84,7 +115,6 @@ def friend_window():
 
     return dic'''
 
-
 def search_name(name, dic):
     return dic[name]
 
@@ -116,6 +146,20 @@ while True:
 
     elif event == 'Games::Gameskey' and not window2:  # Opent Game window
         window2 = Game_window()
+
+    #test knop
+    elif event == '123':
+        a = [40, 20]
+        produce_bar_diagram(a)
+
+    elif event == 'listbox_t':
+        '''Fetch data over geselecteerd spel en maakt diagram'''
+        name = values[event][0]
+        appid = get_appid(name)
+        review_values = get_steamspy(appid, 'reviews')
+        review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
+                            (review_values[1] / (review_values[0] + review_values[1])) * 100]
+        produce_bar_diagram(review_percentage)
 
     elif event == 'listbox_g':  # Window 2
         name = values[event]
