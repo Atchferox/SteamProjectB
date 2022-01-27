@@ -44,6 +44,12 @@ def binary_search(game_input):
     else:
         return '404NotFound'
 
+def get_review_values(naam):
+    appid = get_appid(naam)
+    review_values = get_steamspy(appid, 'reviews')
+    review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
+                         (review_values[1] / (review_values[0] + review_values[1])) * 100]
+    return review_percentage
 
 def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
@@ -240,10 +246,7 @@ while True:
             window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
         else:
             window['-STATS-'].update(f'{find_game}')
-            appid = get_appid(find_game)
-            review_values = get_steamspy(appid, 'reviews')
-            review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
-                                 (review_values[1] / (review_values[0] + review_values[1])) * 100]
+            review_percentage = get_review_values(find_game)
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
 
     elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
@@ -272,10 +275,7 @@ while True:
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
         try:
-            appid = gamenames_id[selectedgame]
-            review_values = get_steamspy(appid, 'reviews')
-            review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
-                                 (review_values[1] / (review_values[0] + review_values[1])) * 100]
+            review_percentage = get_review_values(selectedgame)
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
 
         except (KeyError, NameError):
