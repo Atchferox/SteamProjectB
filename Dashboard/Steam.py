@@ -13,20 +13,9 @@ windll.shcore.SetProcessDpiAwareness(1)
 sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 18)  # test font
 font2 = ("Montserrat Extra Light", 12)
+
 figure_dic = {}
 all_games_list = game_list()
-
-
-'''def game_lijst():
-    sortdic = sorting_data(data)
-    len_max = 0
-    gamelijst = []
-    for name in sortdic:
-        gamelijst.append(name)  # Insert de namen in de listbox
-
-        if len(name) > len_max:
-            len_max = len(name)
-    return gamelijst, len_max'''
 
 
 def draw_figure(canvas, figure, key):
@@ -63,9 +52,70 @@ def produce_bar_diagram(values, key, naam):
     return draw_figure(window[key].TKCanvas, fig, key)
 
 
+def dashboard2():
+    topgames, listofids = top100games()
+    eerste = topgames[0]
+    tweede = topgames[1]
+    derde = topgames[2]
+    vierde = topgames[3]
+    vijfde = topgames[4]
+    zes = topgames[5]
+    zeven = topgames[6]
+    acht = topgames[7]
+    negen = topgames[8]
+    tien = topgames[9]
+    elf = topgames[10]
+    twaalf = topgames[11]
+    dertien = topgames[12]
+    veertien = topgames[13]
+    vijftien = topgames[14]
+
+    menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
+                ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
+
+    pop_games = [[sg.Text('Populair nu', font=font)],
+                 [sg.Text(text=eerste, pad=11, font=font2)],
+                 [sg.Text(text=tweede, pad=11, font=font2)],
+                 [sg.Text(text=derde, pad=11, font=font2)],
+                 [sg.Text(text=vierde, pad=11, font=font2)],
+                 [sg.Text(text=vijfde, pad=11, font=font2)],
+                 [sg.Text(text=zes, pad=11, font=font2)],
+                 [sg.Text(text=zeven, pad=11, font=font2)],
+                 [sg.Text(text=acht, pad=11, font=font2)],
+                 [sg.Text(text=negen, pad=11, font=font2)],
+                 [sg.Text(text=tien, pad=11, font=font2)],
+                 [sg.Text(text=elf, pad=11, font=font2)],
+                 [sg.Text(text=twaalf, pad=11, font=font2)],
+                 [sg.Text(text=dertien, pad=11, font=font2)],
+                 [sg.Text(text=veertien, pad=11, font=font2)],
+                 [sg.Text(text=vijftien, pad=11, font=font2)],
+
+                 ]
+
+    search_frame = [
+        # Search box
+        [sg.Text('Search Games', font=font)], [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')],
+        [sg.Button('Search', key='dashboard_search')],
+        # Search Results
+        [sg.Text(text='', key='-STATS-', visible=True, font=font2)]
+    ]
+
+    figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
+
+    layout = [[sg.Menu(menu_def)],
+
+              [sg.Frame(title='', layout=pop_games, expand_y=True, element_justification='left'),
+               sg.VerticalSeparator(), sg.vtop(sg.Frame(title='', layout=search_frame)),
+               sg.Frame(title='', layout=figure_canvas, border_width=0)
+
+               ]]
+
+    return sg.Window('Steam Home Page', layout, size=(1280, 720),
+                     finalize=True, resizable=True, icon='img/steamlogo.ico')
+
+
 def dashboard():
     topgames, listofids = top100games()
-
 
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
                 ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
@@ -146,22 +196,11 @@ def friend_window():
     return sg.Window('Friend Games', layout4, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
 
 
-'''def sorting_data(data):
-    i = 0
-    dic = {}
-    while i < len(data):
-        # Voegt de naam en de app id toe aan een dictionary
-        dic[data[i]['name']] = data[i]['appid']
-        i += 1
-
-    return dic'''
-
-
 def search_name(name, dic):
     return dic[name]
 
 
-window1, window2, window3, window4 = dashboard(), None, None, None
+window1, window2, window3, window4 = dashboard2(), None, None, None
 
 
 while True:
@@ -189,21 +228,6 @@ while True:
     elif event == 'Games::Gameskey' and not window2:  # Opent Game window
         window2 = Game_window()
 
-    elif event == 'listbox_t':  # Dashboard listbox als er op n naam uit de lijst word geklikt
-
-        game_name = values[event][0]
-        appid = get_appid(game_name)
-        review_values = get_steamspy(appid, 'reviews')
-        review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
-                             (review_values[1] / (review_values[0] + review_values[1])) * 100]
-        produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', game_name)
-        avg_playtime = get_steamspy(appid, 'average_forever')
-        players = get_steamspy(appid, 'ccu')
-
-        window['-STATS-'].update(
-            f'Average playtime in minutes: {avg_playtime} \n{players} People played yesterday \n',
-            visible=True, font=font2)
-
     elif event == 'dashboard_search':
         '''binary search op ingevoerde gamenaam'''
         left = 0
@@ -214,8 +238,7 @@ while True:
             avg = int(left + (right - left) / 2)
 
             if all_games_list[avg].lower() == game_input.lower():
-                print(f'naam gevonden: {all_games_list[avg]}')
-                print(f'{all_games_list[avg]} op plek {avg}')
+                window['-STATS-'].update(f'{all_games_list[avg]}')
                 break
 
             elif all_games_list[avg] < game_input:
@@ -223,13 +246,12 @@ while True:
             elif all_games_list[avg] > game_input:
                 right = right - 1
         else:
-            print('not found')
-
+            window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
 
     elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
         window3 = friend_list_window()
 
-    elif event == 'Search':
+    elif event == 'Search':     # Vrienden zoeken
 
         if not values['-INPUT-']:
             window['-OUTPUT-'].update(f"Results: \nName not found")  # Als de naam niet gevonden is
@@ -252,8 +274,6 @@ while True:
     elif event == '-LISTGAMES':
         selectedgame = values['-LISTGAMES'][0]
         appid = gamenames_id[selectedgame]
-        
-        
 
 
 window.close()

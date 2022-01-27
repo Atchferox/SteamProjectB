@@ -15,6 +15,7 @@ def get_appid(name: str):
     f.close()
     return appid
 
+
 def game_list():
     f = open('API/appids.json')
     dic = json.load(f)
@@ -24,6 +25,7 @@ def game_list():
         all_games_list.append(i)
     all_games_list.sort()
     return all_games_list
+
 
 def get_steamspy(appid: int, data: str):
     """
@@ -71,7 +73,7 @@ def top100games():
         listofgames.append(data[key]['name'])
         listofids.append(data[key]['appid'])
 
-    return listofgames[:10], listofids[:10]
+    return listofgames[:15], listofids[:15]
 
 
 def get_steamid(vanity: str):
