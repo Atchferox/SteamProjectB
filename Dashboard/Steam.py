@@ -26,7 +26,23 @@ def draw_figure(canvas, figure, key):
     figure_dic[key] = figure_canvas_agg
     return figure_canvas_agg
 
+def binary_search(game_input):
+    left = 0
+    right = len(all_games_list) - 1
 
+    while left <= right:
+        avg = int(left + (right - left) / 2)
+
+        if all_games_list[avg].lower() == game_input.lower():
+            window['-STATS-'].update(f'{all_games_list[avg]}')
+            break
+
+        elif all_games_list[avg] < game_input:
+            left = left + 1
+        elif all_games_list[avg] > game_input:
+            right = right - 1
+    else:
+        window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
 def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
 
@@ -230,23 +246,8 @@ while True:
 
     elif event == 'dashboard_search':
         '''binary search op ingevoerde gamenaam'''
-        left = 0
-        right = len(all_games_list) - 1
         game_input = values['-GSEARCH-']
-
-        while left <= right:
-            avg = int(left + (right - left) / 2)
-
-            if all_games_list[avg].lower() == game_input.lower():
-                window['-STATS-'].update(f'{all_games_list[avg]}')
-                break
-
-            elif all_games_list[avg] < game_input:
-                left = left + 1
-            elif all_games_list[avg] > game_input:
-                right = right - 1
-        else:
-            window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+        binary_search(game_input)
 
     elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
         window3 = friend_list_window()
