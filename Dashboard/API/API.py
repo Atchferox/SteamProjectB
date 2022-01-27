@@ -80,7 +80,10 @@ def get_steamid(vanity: str):
     r = requests.get(
         f'https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&vanityurl={vanity}')
     data = r.json()
-    steamid = data['response']['steamid']
+    try:
+        steamid = data['response']['steamid']
+    except KeyError:
+        return 76561198333498208
     return steamid
 
 

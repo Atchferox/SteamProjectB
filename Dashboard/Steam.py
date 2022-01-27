@@ -26,6 +26,7 @@ def draw_figure(canvas, figure, key):
     figure_dic[key] = figure_canvas_agg
     return figure_canvas_agg
 
+
 def binary_search(game_input):
     left = 0
     right = len(all_games_list) - 1
@@ -34,15 +35,16 @@ def binary_search(game_input):
         avg = int(left + (right - left) / 2)
 
         if all_games_list[avg].lower() == game_input.lower():
-            window['-STATS-'].update(f'{all_games_list[avg]}')
-            break
+            return window['-STATS-'].update(f'{all_games_list[avg]}')
 
         elif all_games_list[avg] < game_input:
             left = left + 1
         elif all_games_list[avg] > game_input:
             right = right - 1
     else:
-        window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+        return window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+
+
 def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
 
@@ -62,6 +64,7 @@ def produce_bar_diagram(values, key, naam):
     fig = plt.figure(figsize=(3, 3), facecolor='#1C1E23')
     fig.add_subplot(111).bar(names, values, width=0.4, align='center', color=colors)
     plt.ylim(0, 100)
+    print(len(naam))
     plt.title(naam, color='white')
     plt.tick_params(colors='white')
 
@@ -110,34 +113,35 @@ def dashboard():
 
     tweedecolom = [
         # Search box
-        [sg.Text('Search Games', font=font)], [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')],
-        [sg.Button('Search', key='dashboard_search')],
+        [sg.Text('Search Games', font=font)],
+        [sg.Input(size=(25, 20), key='-GSEARCH-'),
+         sg.Button('Search', key='dashboard_search')],
+
         # Search Results
         [sg.Text(text='', key='-STATS-', visible=True, font=font2)],
+
+        # Vrienden zoeken
+        [sg.Text('Vriendenlijst', font=font)],
+        [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
+        [sg.Input(do_not_clear=False, key='-INPUT-', size=(25, 30)),
+         sg.Button('Search')],
         [sg.Listbox(key='-OUTPUT-', values=[],
-                    select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-                    size=(30, 20)),
+                    select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=True, disabled=True,
+                    size=(30, 20)), sg.Listbox(
+            key='-LISTGAMES-', values=[],
+            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+            size=(30, 20))
          ]
     ]
 
     figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
-
-    vriendenlijst = [[sg.Listbox(
-        key='-OUTPUT-', values=[],
-        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-        size=(30, 20))]]
-
-    gamelisjtvriend = [[sg.Listbox(
-        key='-LISTGAMES-', values=[],
-        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-        size=(30, 20))]]
 
     layout = [[sg.Menu(menu_def)],
 
               [sg.Frame(title='', layout=pop_games, expand_y=True, element_justification='left'),
                sg.VerticalSeparator(),
                sg.vtop(sg.Frame(title='', layout=tweedecolom)),
-               sg.Frame(title='', layout=figure_canvas, border_width=0)]
+               sg.vtop(sg.Frame(title='', layout=figure_canvas, border_width=0, pad=(20, 20)))]
 
               ]
 
@@ -243,7 +247,7 @@ while True:
         else:
             steamid = get_steamid(values['-INPUT-'])  # Krijgt de steamid van de naam die is ingevoerd
             vriendlijst, name_steamid = get_friends(steamid)
-            window['-OUTPUT-'].update(vriendlijst, visible=True)  # Update de listbox van vrienden
+            window['-OUTPUT-'].update(vriendlijst, visible=True, disabled=False)  # Update de listbox van vrienden
 
     elif event == '-OUTPUT-':  # Als er op een naam word geklikt
         steamname = values['-OUTPUT-'][0]
@@ -251,7 +255,7 @@ while True:
         gameidlijst, gamenames = get_games(steamid1)
 
         if gamenames == None:  # Als iemand geen games heeft
-            gamenames = ['Geen games']
+            window['-LISTGAMES-'].update(values=['Geen Games'], visible=True)
         else:
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
@@ -260,9 +264,13 @@ while True:
         selectedgame = values['-LISTGAMES-'][0]
         try:
             appid = gamenames_id[selectedgame]
-        except KeyError:
+            review_values = get_steamspy(appid, 'reviews')
+            review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
+                                 (review_values[1] / (review_values[0] + review_values[1])) * 100]
+            produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
+
+        except (KeyError, NameError):
             print('Je kan dit niet selecteren')
-        print(selectedgame, appid)
 
 
 window.close()
