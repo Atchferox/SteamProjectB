@@ -14,6 +14,7 @@ sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 18)  # test font
 font2 = ("Montserrat Extra Light", 12)
 figure_dic = {}
+all_games_list = game_list()
 
 
 '''def game_lijst():
@@ -65,6 +66,7 @@ def produce_bar_diagram(values, key, naam):
 def dashboard():
     topgames, listofids = top100games()
 
+
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
                 ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
@@ -76,7 +78,8 @@ def dashboard():
                         [sg.Text(key='-STATS-', visible=False)]
                         ]
     search_game = [[sg.Text('Search Games', font=font)],
-                   [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')]
+                   [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')],
+                   [sg.Button('Search', key='dashboard_search')]
                    ]
 
     figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
@@ -193,6 +196,28 @@ while True:
         window['-STATS-'].update(
             f'Average playtime in minutes: {avg_playtime} \n{players} People played yesterday \n',
             visible=True, font=font2)
+
+    elif event == 'dashboard_search':
+        '''binary search op ingevoerde gamenaam'''
+        left = 0
+        right = len(all_games_list) - 1
+        game_input = values['-GSEARCH-']
+
+        while left <= right:
+            avg = int(left + (right - left) / 2)
+
+            if all_games_list[avg].lower() == game_input.lower():
+                print(f'naam gevonden: {all_games_list[avg]}')
+                print(f'{all_games_list[avg]} op plek {avg}')
+                break
+
+            elif all_games_list[avg] < game_input:
+                left = left + 1
+            elif all_games_list[avg] > game_input:
+                right = right - 1
+        else:
+            print('not found')
+
 
     elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
         window3 = friend_list_window()

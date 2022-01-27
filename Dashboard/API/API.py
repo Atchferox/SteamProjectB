@@ -5,6 +5,7 @@ import json
 
 
 def get_appid(name: str):
+    '''Haalt appid bij naam van game'''
     f = open('API/appids.json')
     dic = json.load(f)
     try:
@@ -12,9 +13,17 @@ def get_appid(name: str):
     except KeyError:
         return 730
     f.close()
-
     return appid
 
+def game_list():
+    f = open('API/appids.json')
+    dic = json.load(f)
+    all_games_list = []
+
+    for i in dic:
+        all_games_list.append(i)
+    all_games_list.sort()
+    return all_games_list
 
 def get_steamspy(appid: int, data: str):
     """
