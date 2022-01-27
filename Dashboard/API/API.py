@@ -3,12 +3,18 @@ from PIL import Image
 from io import BytesIO
 import json
 
+
 def get_appid(name: str):
     f = open('API/appids.json')
     dic = json.load(f)
-    appid = dic[f'{name}']
+    try:
+        appid = dic[f'{name}']
+    except KeyError:
+        return 730
     f.close()
+
     return appid
+
 
 def get_steamspy(appid: int, data: str):
     """
@@ -49,13 +55,14 @@ def top100games():
     r = requests.get('https://steamspy.com/api.php?request=top100in2weeks')
     data = r.json()
     listofgames = []
-    max_len = 0  # Necessary in steam.py
+    listofids = []
+
     for key in data:
         # Puts the name of the game in listofgames
         listofgames.append(data[key]['name'])
-        if len(data[key]['name']) > max_len:  # Sets max_len as the highest amount of characters in a game name
-            max_len = len(data[key]['name'])
-    return listofgames, max_len
+        listofids.append(data[key]['appid'])
+
+    return listofgames[:10], listofids[:10]
 
 
 def get_steamid(vanity: str):
@@ -122,4 +129,3 @@ def get_background(appid: int):
     background = r[str(appid)]['data']['background']
     img = Image.open(BytesIO(background.content))
     return img
-
