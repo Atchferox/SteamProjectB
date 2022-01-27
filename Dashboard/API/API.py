@@ -129,3 +129,10 @@ def get_background(appid: int):
     background = r[str(appid)]['data']['background']
     img = Image.open(BytesIO(background.content))
     return img
+
+
+def get_user_game_stats(appid, steamid):
+    r = requests.get(
+        f'https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamid={steamid}&appid={appid}')
+    r = r.json()
+    return

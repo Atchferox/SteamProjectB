@@ -95,15 +95,22 @@ def Game_window():
 
 
 def friend_list_window():
+    frame = [[sg.Listbox(
+        key='-OUTPUT-', values=[],
+        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+        size=(30, 20))]]
+
+    frame2 = [[sg.Listbox(
+        key='-LISTGAMES-', values=[],
+        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+        size=(30, 20))]]
+
     layout3 = [
         [sg.Text('Vriendenlijst', font=font)],
         [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
         [sg.Input(do_not_clear=False, key='-INPUT-'),
          sg.Button('Search')],
-        [sg.Listbox(
-            key='-OUTPUT-', values=[],
-            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-            size=(30, 20))]]
+        [sg.Frame(title='', layout=frame, border_width=0), sg.Frame(title='', layout=frame2, border_width=0)]]
 
     return sg.Window('Friends', layout3, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
 
@@ -200,7 +207,21 @@ while True:
             window['-OUTPUT-'].update(vriendlijst, visible=True)  # Update de listbox van vrienden
 
     elif event == '-OUTPUT-':  # Als er op een naam word geklikt
-        window4 = friend_window()
+        steamname = values['-OUTPUT-'][0]
+        steamid1 = search_name(steamname, name_steamid)  # Geeft steamid om de lijst van games te krijgen
+        gameidlijst, gamenames = get_games(steamid1)
+
+        if gamenames == None:  # Als iemand geen games heeft
+            gamenames = ['Geen games']
+        else:
+            gamenames_id = dict(zip(gamenames, gameidlijst))
+        window['-LISTGAMES-'].update(values=gamenames, visible=True)
+
+    elif event == '-LISTGAMES':
+        selectedgame = values['-LISTGAMES'][0]
+        appid = gamenames_id[selectedgame]
+        
+        
 
 
 window.close()
