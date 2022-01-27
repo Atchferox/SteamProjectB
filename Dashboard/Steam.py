@@ -271,9 +271,13 @@ while True:
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
 
-    elif event == '-LISTGAMES':
-        selectedgame = values['-LISTGAMES'][0]
-        appid = gamenames_id[selectedgame]
+    elif event == '-LISTGAMES-':
+        selectedgame = values['-LISTGAMES-'][0]
+        try:
+            appid = gamenames_id[selectedgame]
+        except KeyError:
+            print('Je kan dit niet selecteren')
+        print(selectedgame, appid)
 
 
 window.close()
