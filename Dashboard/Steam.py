@@ -52,7 +52,7 @@ def produce_bar_diagram(values, key, naam):
     return draw_figure(window[key].TKCanvas, fig, key)
 
 
-def dashboard2():
+def dashboard():
     topgames, listofids = top100games()
     eerste = topgames[0]
     tweede = topgames[1]
@@ -92,57 +92,41 @@ def dashboard2():
 
                  ]
 
-    search_frame = [
+    tweedecolom = [
         # Search box
         [sg.Text('Search Games', font=font)], [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')],
         [sg.Button('Search', key='dashboard_search')],
         # Search Results
-        [sg.Text(text='', key='-STATS-', visible=True, font=font2)]
+        [sg.Text(text='', key='-STATS-', visible=True, font=font2)],
+        [sg.Listbox(key='-OUTPUT-', values=[],
+                    select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+                    size=(30, 20)),
+         ]
     ]
 
     figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
 
+    vriendenlijst = [[sg.Listbox(
+        key='-OUTPUT-', values=[],
+        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+        size=(30, 20))]]
+
+    gamelisjtvriend = [[sg.Listbox(
+        key='-LISTGAMES-', values=[],
+        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+        size=(30, 20))]]
+
     layout = [[sg.Menu(menu_def)],
 
               [sg.Frame(title='', layout=pop_games, expand_y=True, element_justification='left'),
-               sg.VerticalSeparator(), sg.vtop(sg.Frame(title='', layout=search_frame)),
-               sg.Frame(title='', layout=figure_canvas, border_width=0)
+               sg.VerticalSeparator(),
+               sg.vtop(sg.Frame(title='', layout=tweedecolom)),
+               sg.Frame(title='', layout=figure_canvas, border_width=0)]
 
-               ]]
+              ]
 
     return sg.Window('Steam Home Page', layout, size=(1280, 720),
                      finalize=True, resizable=True, icon='img/steamlogo.ico')
-
-
-def dashboard():
-    topgames, listofids = top100games()
-
-    menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
-                ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
-
-    top10gameslayout = [[sg.Text('Top 10 Games van de afgelopen 2 weken', font=font)],
-                        [sg.Listbox(
-                            values=topgames, size=(30, len(topgames)), font=font2,
-                            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, key='listbox_t', bind_return_key=True,
-                            enable_events=True)],
-                        [sg.Text(key='-STATS-', visible=False)]
-                        ]
-    search_game = [[sg.Text('Search Games', font=font)],
-                   [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')],
-                   [sg.Button('Search', key='dashboard_search')]
-                   ]
-
-    figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
-
-    layout = [
-        [sg.Menu(menu_def)],
-        [sg.vtop(sg.Frame(title='', layout=search_game)),
-         sg.Frame(title='', layout=figure_canvas, border_width=0),
-         sg.vtop(sg.Frame(title='', layout=top10gameslayout, vertical_alignment='RIGHT'))]]
-
-    return sg.Window(
-        'Dashboard', layout, size=(1280, 720),
-        finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
 def Game_window():
@@ -200,7 +184,7 @@ def search_name(name, dic):
     return dic[name]
 
 
-window1, window2, window3, window4 = dashboard2(), None, None, None
+window1, window2, window3, window4 = dashboard(), None, None, None
 
 
 while True:
