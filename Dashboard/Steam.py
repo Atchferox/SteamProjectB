@@ -13,6 +13,7 @@ windll.shcore.SetProcessDpiAwareness(1)
 sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 18)  # test font
 font2 = ("Montserrat Extra Light", 12)
+figure_dic = {}
 
 
 '''def game_lijst():
@@ -27,20 +28,25 @@ font2 = ("Montserrat Extra Light", 12)
     return gamelijst, len_max'''
 
 
-def draw_figure(canvas, figure):
+def draw_figure(canvas, figure, key):
     ''''''
-    global figure_canvas_agg
     figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+    figure_dic[key] = figure_canvas_agg
     return figure_canvas_agg
 
 
-def produce_bar_diagram(values):
+def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
 
     try:  # Indien er al een diagram bestaat
+        figure_canvas_agg = figure_dic[key]
         figure_canvas_agg.get_tk_widget().destroy()
+        plt.clf()
+        # plt.title('')
+    except KeyError:
+        pass
     except NameError:
         pass
 
@@ -50,9 +56,10 @@ def produce_bar_diagram(values):
     fig = plt.figure(figsize=(3, 3), facecolor='#1C1E23')
     fig.add_subplot(111).bar(names, values, width=0.4, align='center', color=colors)
     plt.ylim(0, 100)
+    plt.title(naam, color='white')
     plt.tick_params(colors='white')
 
-    return draw_figure(window['-CANVAS-'].TKCanvas, fig)
+    return draw_figure(window[key].TKCanvas, fig, key)
 
 
 def dashboard():
@@ -72,7 +79,7 @@ def dashboard():
                    [sg.Input(size=(25, 20), pad=(12, 12), key='-GSEARCH-')]
                    ]
 
-    figure_canvas = [[sg.Canvas(key='-CANVAS-')]]
+    figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
 
     layout = [
         [sg.Menu(menu_def)],
@@ -174,12 +181,12 @@ while True:
 
     elif event == 'listbox_t':  # Dashboard listbox als er op n naam uit de lijst word geklikt
 
-        name = values[event][0]
-        appid = get_appid(name)
+        game_name = values[event][0]
+        appid = get_appid(game_name)
         review_values = get_steamspy(appid, 'reviews')
         review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
                              (review_values[1] / (review_values[0] + review_values[1])) * 100]
-        produce_bar_diagram(review_percentage)
+        produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', game_name)
         avg_playtime = get_steamspy(appid, 'average_forever')
         players = get_steamspy(appid, 'ccu')
 
