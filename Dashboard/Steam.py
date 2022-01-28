@@ -85,7 +85,7 @@ def search_name(name, dic):
 
 def dashboard():
     topgames, listofids = top100games()
-    
+
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
                 ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
@@ -131,7 +131,7 @@ def dashboard():
 
               ]
 
-    return sg.Window('Steam Home Page', layout, size=(1400, 800),
+    return sg.Window('Steam Home Page', layout, size=(1400, 720),
                      finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
@@ -214,7 +214,8 @@ while True:
                 review_percentage = get_review_values(selectedgame)
                 produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
                 playtime = gamename_playtime[selectedgame]
-                window['-STATS-'].update(f'Steam naam: {steamname} \nUur gespeeld: {playtime}')
+                uurgespeeld = convert_min_to_hour(playtime)
+                window['-STATS-'].update(f'Steam naam: {steamname} \nTotale speeltijd: {uurgespeeld}')
                 window['-STATSFR-'].update(visible=True)
 
         except (KeyError, NameError):

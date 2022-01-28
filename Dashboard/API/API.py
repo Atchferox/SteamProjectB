@@ -1,3 +1,4 @@
+from lib2to3.pytree import convert
 import requests
 from PIL import Image
 from io import BytesIO
@@ -158,10 +159,15 @@ def get_user_game_stats(appid, steamid):
 
 
 def get_average_playtime(appid: int):
-    import time
 
     data = get_steamspy(appid, 'average_2weeks')
-    time_seconds = data*60
+    time_format = convert_min_to_hour(data)
+    return time_format
+
+
+def convert_min_to_hour(minutes):
+    import time
+    time_seconds = minutes*60
     time_format = time.strftime('%H uur en %M minuten', time.gmtime(time_seconds))
     return time_format
 
