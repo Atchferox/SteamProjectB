@@ -44,12 +44,14 @@ def binary_search(game_input):
     else:
         return '404NotFound'
 
+
 def get_review_values(naam):
     appid = get_appid(naam)
     review_values = get_steamspy(appid, 'reviews')
     review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
                          (review_values[1] / (review_values[0] + review_values[1])) * 100]
     return review_percentage
+
 
 def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
@@ -59,9 +61,7 @@ def produce_bar_diagram(values, key, naam):
         figure_canvas_agg.get_tk_widget().destroy()
         plt.clf()
         # plt.title('')
-    except KeyError:
-        pass
-    except NameError:
+    except (KeyError, NameError):
         pass
 
     names = ['Positieve reviews', 'Negatieve reviews']
@@ -70,7 +70,7 @@ def produce_bar_diagram(values, key, naam):
     fig = plt.figure(figsize=(3, 3), facecolor='#1C1E23')
     fig.add_subplot(111).bar(names, values, width=0.4, align='center', color=colors)
     plt.ylim(0, 100)
-    print(len(naam))
+
     plt.title(naam, color='white')
     plt.tick_params(colors='white')
 
@@ -128,7 +128,7 @@ def dashboard():
          sg.Button('Search', key='dashboard_search')],
 
         # Search Results
-        [sg.Text(text='', key='-STATS-', visible=True, font=font2)],
+        [sg.Text(text='', key='-ZOEK-', visible=True, font=font2)],
 
         # Vrienden zoeken
         [sg.Text('Vriendenlijst', font=font)],
@@ -144,7 +144,11 @@ def dashboard():
          ]
     ]
 
-    figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')]]
+    stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
+
+    figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')],
+                     [sg.Frame(title='', layout=stats, border_width=0)]
+                     ]
 
     layout = [[sg.Menu(menu_def)],
 
@@ -191,7 +195,7 @@ while True:
         if find_game == '404NotFound':
             window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
         else:
-            window['-STATS-'].update(f'{find_game}')
+            window['-ZOEK-'].update('Game gevonden!')
             review_percentage = get_review_values(find_game)
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
 
@@ -207,19 +211,27 @@ while True:
     elif event == '-OUTPUT-':  # Als er op een naam word geklikt
         steamname = values['-OUTPUT-'][0]
         steamid1 = search_name(steamname, name_steamid)  # Geeft steamid om de lijst van games te krijgen
-        gameidlijst, gamenames = get_games(steamid1)
+        gameidlijst, gamenames, playintimes = get_games(steamid1)
 
         if gamenames == None:  # Als iemand geen games heeft
             window['-LISTGAMES-'].update(values=['Geen Games'], visible=True)
         else:
+            gamename_playtime = dict(zip(gamenames, playintimes))
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
 
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
         try:
-            review_percentage = get_review_values(selectedgame)
-            produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
+            if selectedgame == 'Geen Games':
+                figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
+                figure_canvas_agg.get_tk_widget().destroy()
+                window['-STATS-'].update('Deze user heeft geen spellen')
+            else:
+                review_percentage = get_review_values(selectedgame)
+                produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
+                playtime = gamename_playtime[selectedgame]
+                window['-STATS-'].update(f'Uur gespeeld: {playtime}', border_width=1)
 
         except (KeyError, NameError):
             print('Je kan dit niet selecteren')

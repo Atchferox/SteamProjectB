@@ -123,13 +123,17 @@ def get_games(steamid: int):
     except KeyError:
         gamenames = None
         gameid = None
-        return gamenames, gameid
+        playingtime = None
+        return gamenames, gameid, playingtime
 
     sortedgames = sorted(gameslist, key=lambda d: d["playtime_forever"], reverse=True)
+
     # laat de 10 meest gespeelde games zien
     gameids = [game["appid"] for game in sortedgames[:10]]
     gamenames = [gamename["name"] for gamename in sortedgames[:10]]
-    return gameids, gamenames
+    playingtime = [playtime["playtime_forever"] for playtime in sortedgames[:10]]
+
+    return gameids, gamenames, playingtime
 
 
 def get_background(appid: int):
