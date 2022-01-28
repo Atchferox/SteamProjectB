@@ -1,6 +1,8 @@
 from msvcrt import kbhit
 import PySimpleGUI as sg  # pip install PySimpleGUI
 from ctypes import windll
+
+from numpy import true_divide
 from API.API import *
 
 import matplotlib.pyplot as plt
@@ -189,15 +191,26 @@ while True:
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
 
     elif event == 'dashboard_search':
+        window['-ZOEK-'].update('')
         '''binary search op ingevoerde gamenaam'''
         game_input = values['-GSEARCH-']
         find_game = binary_search(game_input)
         if find_game == '404NotFound':
+            figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
+            figure_canvas_agg.get_tk_widget().destroy()
+            window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+
         else:
             window['-ZOEK-'].update('Game gevonden!')
+            appid = get_appid(find_game)
+            avg_speeltijd = get_average_playtime(appid)
+            estimate_owners = get_estimate_owners(appid)
             review_percentage = get_review_values(find_game)
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
+            window['-STATSFR-'].update(visible=True)
+            window['-STATS-'].update(
+                f"De gemiddelde speeltijd is {avg_speeltijd} \nSchatting aantal gebruikers: {estimate_owners}")
 
     elif event == 'Search':     # Vrienden zoeken
 

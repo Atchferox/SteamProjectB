@@ -42,6 +42,7 @@ def get_steamspy(appid: int, data: str):
     initial_price; in cents, str \n
     ccu; peak concurrent players yesterday in int \n
     languages; str of languages seperated by commas \n
+    owners; str of estimate of owners
     tags; dictionary of tags    
     """
     r = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
@@ -154,3 +155,17 @@ def get_user_game_stats(appid, steamid):
         f'https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamid={steamid}&appid={appid}')
     r = r.json()
     return
+
+
+def get_average_playtime(appid: int):
+    import time
+
+    data = get_steamspy(appid, 'average_2weeks')
+    time_seconds = data*60
+    time_format = time.strftime('%H uur en %M minuten', time.gmtime(time_seconds))
+    return time_format
+
+
+def get_estimate_owners(appid: int):
+    data = get_steamspy(appid, 'owners')
+    return data
