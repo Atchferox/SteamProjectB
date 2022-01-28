@@ -85,43 +85,13 @@ def search_name(name, dic):
 
 def dashboard():
     topgames, listofids = top100games()
-    eerste = topgames[0]
-    tweede = topgames[1]
-    derde = topgames[2]
-    vierde = topgames[3]
-    vijfde = topgames[4]
-    zes = topgames[5]
-    zeven = topgames[6]
-    acht = topgames[7]
-    negen = topgames[8]
-    tien = topgames[9]
-    elf = topgames[10]
-    twaalf = topgames[11]
-    dertien = topgames[12]
-    veertien = topgames[13]
-    vijftien = topgames[14]
-
+    
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
                 ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
-    pop_games = [[sg.Text('Populaire Games', font=font)],
-                 [sg.Text(text=eerste, pad=11, font=font2)],
-                 [sg.Text(text=tweede, pad=11, font=font2)],
-                 [sg.Text(text=derde, pad=11, font=font2)],
-                 [sg.Text(text=vierde, pad=11, font=font2)],
-                 [sg.Text(text=vijfde, pad=11, font=font2)],
-                 [sg.Text(text=zes, pad=11, font=font2)],
-                 [sg.Text(text=zeven, pad=11, font=font2)],
-                 [sg.Text(text=acht, pad=11, font=font2)],
-                 [sg.Text(text=negen, pad=11, font=font2)],
-                 [sg.Text(text=tien, pad=11, font=font2)],
-                 [sg.Text(text=elf, pad=11, font=font2)],
-                 [sg.Text(text=twaalf, pad=11, font=font2)],
-                 [sg.Text(text=dertien, pad=11, font=font2)],
-                 [sg.Text(text=veertien, pad=11, font=font2)],
-                 [sg.Text(text=vijftien, pad=11, font=font2)],
+    pop_games = [[sg.Text('Populaire Games', font=font)]]
 
-                 ]
+    pop_games += [[sg.Text(text=f'{name}', pad=11, font=font2)] for name in topgames]
 
     tweedecolom = [
         # Search box
@@ -155,9 +125,9 @@ def dashboard():
     layout = [[sg.Menu(menu_def)],
 
               [sg.Frame(title='', layout=pop_games, expand_y=True, element_justification='left'),
-               sg.VerticalSeparator(),
-               sg.vtop(sg.Frame(title='', layout=tweedecolom)),
-               sg.vtop(sg.Frame(title='', layout=figure_canvas, border_width=0, pad=(20, 20)))]
+              sg.VerticalSeparator(),
+              sg.vtop(sg.Frame(title='', layout=tweedecolom)),
+              sg.vtop(sg.Frame(title='', layout=figure_canvas, border_width=0, pad=(20, 20)))]
 
               ]
 
