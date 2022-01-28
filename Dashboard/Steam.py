@@ -71,6 +71,10 @@ def produce_bar_diagram(values, key, naam):
     return draw_figure(window[key].TKCanvas, fig, key)
 
 
+def search_name(name, dic):
+    return dic[name]
+
+
 def dashboard():
     topgames, listofids = top100games()
     eerste = topgames[0]
@@ -92,7 +96,7 @@ def dashboard():
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
                 ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
-    pop_games = [[sg.Text('Populair nu', font=font)],
+    pop_games = [[sg.Text('Populaire Games', font=font)],
                  [sg.Text(text=eerste, pad=11, font=font2)],
                  [sg.Text(text=tweede, pad=11, font=font2)],
                  [sg.Text(text=derde, pad=11, font=font2)],
@@ -145,63 +149,8 @@ def dashboard():
 
               ]
 
-    return sg.Window('Steam Home Page', layout, size=(1280, 720),
+    return sg.Window('Steam Home Page', layout, size=(1400, 800),
                      finalize=True, resizable=True, icon='img/steamlogo.ico')
-
-
-def Game_window():
-
-    layout2 = [
-        [sg.Text('Jouw Games', font=font)],
-        [sg.Text('Deze functie is nog in ontwikkeling')]]
-
-    return sg.Window('Games', layout2, finalize=True, resizable=True, icon='img/steamlogo.ico')
-
-
-def friend_list_window():
-    frame = [[sg.Listbox(
-        key='-OUTPUT-', values=[],
-        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-        size=(30, 20))]]
-
-    frame2 = [[sg.Listbox(
-        key='-LISTGAMES-', values=[],
-        select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-        size=(30, 20))]]
-
-    layout3 = [
-        [sg.Text('Vriendenlijst', font=font)],
-        [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
-        [sg.Input(do_not_clear=False, key='-INPUT-'),
-         sg.Button('Search')],
-        [sg.Frame(title='', layout=frame, border_width=0), sg.Frame(title='', layout=frame2, border_width=0)]]
-
-    return sg.Window('Friends', layout3, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
-
-
-def friend_window():
-
-    steamname = values['-OUTPUT-']
-    keydicname = steamname[0]
-
-    steamid1 = search_name(keydicname, name_steamid)  # Geeft steamid om de lijst van games te krijgen
-    gameidlijst, gamenames = get_games(steamid1)
-
-    if gamenames == None:  # Als iemand geen games heeft
-        gamenames = ['Geen games']
-
-    else:
-        gamenames_id = dict(zip(gamenames, gameidlijst))
-
-    layout4 = [[sg.Listbox(values=gamenames, key='-GAMES-', size=(30, 10))],
-               [sg.Text(key='-gekke-')]
-               ]
-
-    return sg.Window('Friend Games', layout4, finalize=True, resizable=True, icon='img/steamlogo.ico', modal=True)
-
-
-def search_name(name, dic):
-    return dic[name]
 
 
 window1, window2, window3, window4 = dashboard(), None, None, None
@@ -229,16 +178,10 @@ while True:
     elif event == 'Help::help':
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
 
-    elif event == 'Games::Gameskey' and not window2:  # Opent Game window
-        window2 = Game_window()
-
     elif event == 'dashboard_search':
         '''binary search op ingevoerde gamenaam'''
         game_input = values['-GSEARCH-']
         binary_search(game_input)
-
-    elif event == 'Friends::friendskey' and not window3:  # Opent Friend List window
-        window3 = friend_list_window()
 
     elif event == 'Search':     # Vrienden zoeken
 
