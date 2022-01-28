@@ -35,15 +35,21 @@ def binary_search(game_input):
         avg = int(left + (right - left) / 2)
 
         if all_games_list[avg].lower() == game_input.lower():
-            return window['-STATS-'].update(f'{all_games_list[avg]}')
+            return all_games_list[avg]
 
         elif all_games_list[avg] < game_input:
             left = left + 1
         elif all_games_list[avg] > game_input:
             right = right - 1
     else:
-        return window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+        return '404NotFound'
 
+def get_review_values(naam):
+    appid = get_appid(naam)
+    review_values = get_steamspy(appid, 'reviews')
+    review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
+                         (review_values[1] / (review_values[0] + review_values[1])) * 100]
+    return review_percentage
 
 def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
@@ -181,7 +187,13 @@ while True:
     elif event == 'dashboard_search':
         '''binary search op ingevoerde gamenaam'''
         game_input = values['-GSEARCH-']
-        binary_search(game_input)
+        find_game = binary_search(game_input)
+        if find_game == '404NotFound':
+            window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+        else:
+            window['-STATS-'].update(f'{find_game}')
+            review_percentage = get_review_values(find_game)
+            produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
 
     elif event == 'Search':     # Vrienden zoeken
 
@@ -206,10 +218,7 @@ while True:
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
         try:
-            appid = gamenames_id[selectedgame]
-            review_values = get_steamspy(appid, 'reviews')
-            review_percentage = [(review_values[0] / (review_values[0] + review_values[1])) * 100,
-                                 (review_values[1] / (review_values[0] + review_values[1])) * 100]
+            review_percentage = get_review_values(selectedgame)
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
 
         except (KeyError, NameError):
