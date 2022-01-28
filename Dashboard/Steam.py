@@ -1,13 +1,14 @@
-from msvcrt import kbhit
 import PySimpleGUI as sg  # pip install PySimpleGUI
 from ctypes import windll
 
 from numpy import true_divide
 from API.API import *
+from API.ssh import *
 
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 
 # Hierdoor is het op elk scherm high definition
 windll.shcore.SetProcessDpiAwareness(1)
@@ -93,6 +94,13 @@ def dashboard():
 
     pop_games += [[sg.Text(text=f'{name}', pad=11, font=font2)] for name in topgames]
 
+    connect_layout = [[sg.Text('Connect to your Raspberry Pi', font=font2), sg.Button('Connect', key='-CONNECT-')],
+                      [sg.Input('Hostadress', pad=5, key='-HOST-')],
+                      [sg.Input('Username', pad=5, key='-UN-')],
+                      [sg.Input('Password', pad=5, key='-PW-')],
+                      [sg.Button('Disconnect', key='-DISCONNECT-')]
+                      ]
+
     tweedecolom = [
         # Search box
         [sg.Text('Search Games', font=font)],
@@ -113,7 +121,7 @@ def dashboard():
             key='-LISTGAMES-', values=[],
             select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
             size=(30, 20))
-         ]
+         ], [sg.Frame(title='Pi', layout=connect_layout, pad=12, font=font2)]
     ]
 
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
@@ -131,7 +139,7 @@ def dashboard():
 
               ]
 
-    return sg.Window('Steam Home Page', layout, size=(1400, 720),
+    return sg.Window('Steam Home Page', layout, size=(1400, 760),
                      finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
@@ -159,6 +167,12 @@ while True:
 
     elif event == 'Help::help':
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
+
+    elif event == '-CONNECT-':
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
+        send_file(hostname, username, password, 'helloworld.py')
 
     elif event == 'dashboard_search':
         window['-ZOEK-'].update('')
