@@ -147,7 +147,7 @@ def dashboard():
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
 
     figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')],
-                     [sg.Frame(title='', layout=stats, border_width=0)]
+                     [sg.Frame(title='Stats', layout=stats, border_width=1, key='-STATSFR-', visible=False, font=font2)]
                      ]
 
     layout = [[sg.Menu(menu_def)],
@@ -231,7 +231,8 @@ while True:
                 review_percentage = get_review_values(selectedgame)
                 produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
                 playtime = gamename_playtime[selectedgame]
-                window['-STATS-'].update(f'Uur gespeeld: {playtime}', border_width=1)
+                window['-STATS-'].update(f'Steam naam: {steamname} \nUur gespeeld: {playtime}')
+                window['-STATSFR-'].update(visible=True)
 
         except (KeyError, NameError):
             print('Je kan dit niet selecteren')
