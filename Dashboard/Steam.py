@@ -1,3 +1,22 @@
+'''
+Voor dit programma moeten er een paar dingen worden geinstalleerd. 
+Ten eerste, PySimpleGUI, dit doe je met pip install PySimpleGUI.
+Ten tweede, Matplotlib, dit doe je met pip install matplotlib
+Ten derde, Paraminko, dit doe je met pip install paraminko
+
+
+Krijg je een fout melding als je dit programma probeert te openenen, ga dan naar de subdirectory Dashboard. 
+
+
+Dit is een project van:
+Luuk
+Thomas
+Ghassan
+Maarten
+Jasper
+'''
+
+
 import PySimpleGUI as sg  # pip install PySimpleGUI
 from ctypes import windll
 
@@ -14,8 +33,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 windll.shcore.SetProcessDpiAwareness(1)
 
 sg.theme('darkgray10')
-font = ("Montserrat Extra Light", 18)  # test font
-font2 = ("Montserrat Extra Light", 12)
+font = ("Montserrat Extra Light", 18)  # Titel font
+font2 = ("Montserrat Extra Light", 12)  # Subtext font
 
 figure_dic = {}
 all_games_list = game_list()
@@ -88,12 +107,16 @@ def dashboard():
     topgames, listofids = top100games()
 
     menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
-                ['Library', ['Games::Gameskey']]]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
+                ['Library', ['Games::Gameskey']],
+                ['Status', ['Online::online', 'Offline::offline', 'AFK::afk']]
+                ]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
 
     pop_games = [[sg.Text('Populaire Games', font=font)]]
 
-    pop_games += [[sg.Text(text=f'{name}', pad=11, font=font2)] for name in topgames]
+    pop_games += [[sg.Text(text=f'{name}', pad=11, font=font2)]
+                  for name in topgames]  # List comprehension to get all the names in text block
 
+    # Raspberry pi connection inputs
     connect_layout = [[sg.Text('Connect to your Raspberry Pi', font=font2), sg.Button('Connect', key='-CONNECT-')],
                       [sg.Input('Hostadress', pad=5, key='-HOST-')],
                       [sg.Input('Username', pad=5, key='-UN-')],
@@ -101,35 +124,42 @@ def dashboard():
                       [sg.Button('Disconnect', key='-DISCONNECT-')]
                       ]
 
-    tweedecolom = [
-        # Search box
-        [sg.Text('Search Games', font=font)],
-        [sg.Input(size=(25, 20), key='-GSEARCH-'),
-         sg.Button('Search', key='dashboard_search')],
+    # Binary search box, vriendenlijst en gamelijst
+    tweedecolom = [[sg.Text('Search Games', font=font)],
+                   [sg.Input(size=(25, 20), key='-GSEARCH-'), sg.Button('Search', key='dashboard_search')],
 
-        # Search Results
-        [sg.Text(text='', key='-ZOEK-', visible=True, font=font2)],
+                   # Search Results
+                   [sg.Text(text='', key='-ZOEK-', visible=True, font=font2)],
 
-        # Vrienden zoeken
-        [sg.Text('Vriendenlijst', font=font)],
-        [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
-        [sg.Input(do_not_clear=False, key='-INPUT-', size=(25, 30)),
-         sg.Button('Search')],
-        [sg.Listbox(key='-OUTPUT-', values=[],
+                   # Vrienden zoeken
+                   [sg.Text('Vriendenlijst', font=font)],
+                   [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
+                   [sg.Input(do_not_clear=False, key='-INPUT-', size=(25, 30)),
+                    sg.Button('Search')],
+
+                   # Hier komt de lijst van vrienden
+                   [sg.Listbox(key='-OUTPUT-', values=[],
                     select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=True, disabled=True,
-                    size=(30, 20)), sg.Listbox(
-            key='-LISTGAMES-', values=[],
-            select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
-            size=(30, 20))
-         ], [sg.Frame(title='Pi', layout=connect_layout, pad=12, font=font2)]
-    ]
+                    size=(30, 20)),
 
+                    # Hier komt de lijst van games
+                    sg.Listbox(
+                       key='-LISTGAMES-', values=[],
+                       select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=False,
+                       size=(30, 20))
+                    ],
+                   # Frame om alles in te zetten
+                   [sg.Frame(title='Pi', layout=connect_layout, pad=12, font=font2)]
+                   ]
+    # Hier worden de statistieken getoont
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
 
+    # Matplotlib canvas
     figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')],
                      [sg.Frame(title='Stats', layout=stats, border_width=1, key='-STATSFR-', visible=False, font=font2)]
                      ]
 
+    # Volledige layout van de main window
     layout = [[sg.Menu(menu_def)],
 
               [sg.Frame(title='', layout=pop_games, expand_y=True, element_justification='left'),
@@ -146,6 +176,7 @@ def dashboard():
 window1, window2, window3, window4 = dashboard(), None, None, None
 
 
+# While loop waarin alle events die er gebeuren kunnen uitgelezen worden
 while True:
     window, event, values = sg.read_all_windows()
 
@@ -172,7 +203,17 @@ while True:
         hostname = values['-HOST-']
         username = values['-UN-']
         password = values['-PW-']
-        send_file(hostname, username, password, 'helloworld.py')
+        if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
+            sg.Popup('Vul de gegevens in', title='Error')
+
+    elif event == 'Online::online':
+        print('Online')
+
+    elif event == 'Offline::offline':
+        print('Offline')
+
+    elif event == 'AFK::afk':
+        print('AFK')
 
     elif event == 'dashboard_search':
         window['-ZOEK-'].update('')
