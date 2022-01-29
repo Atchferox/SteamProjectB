@@ -17,7 +17,7 @@ Jasper
 '''
 
 
-import PySimpleGUI as sg  # pip install PySimpleGUI
+import PySimpleGUI as sg 
 from ctypes import windll
 
 from numpy import true_divide
@@ -120,8 +120,7 @@ def dashboard():
     connect_layout = [[sg.Text('Connect to your Raspberry Pi', font=font2), sg.Button('Connect', key='-CONNECT-')],
                       [sg.Input('Hostadress', pad=5, key='-HOST-')],
                       [sg.Input('Username', pad=5, key='-UN-')],
-                      [sg.Input('Password', pad=5, key='-PW-')],
-                      [sg.Button('Disconnect', key='-DISCONNECT-')]
+                      [sg.Input('Password', pad=5, key='-PW-')]
                       ]
 
     # Binary search box, vriendenlijst en gamelijst
@@ -132,6 +131,7 @@ def dashboard():
                    [sg.Text(text='', key='-ZOEK-', visible=True, font=font2)],
 
                    # Vrienden zoeken
+                   [sg.HorizontalSeparator()],
                    [sg.Text('Vriendenlijst', font=font)],
                    [sg.Text('Vul hier je steamID in om je vriendelijst te krijgen')],
                    [sg.Input(do_not_clear=False, key='-INPUT-', size=(25, 30)),
@@ -197,16 +197,40 @@ while True:
         username = values['-UN-']
         password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
-            sg.Popup('Vul de gegevens in', title='Error')
+            sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+        else:
+            # run file
+            pass
 
     elif event == 'Online::online':
-        print('Online')
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
+        if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
+            sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+        else:
+            # Run file
+            pass
 
     elif event == 'Offline::offline':
-        print('Offline')
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
+        if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
+            sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+        else:
+            # Run file
+            pass
 
     elif event == 'AFK::afk':
-        print('AFK')
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
+        if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
+            sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+        else:
+            # Run file
+            pass
 
     elif event == 'dashboard_search':
         window['-ZOEK-'].update('')
