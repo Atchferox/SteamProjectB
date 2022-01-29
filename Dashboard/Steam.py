@@ -173,31 +173,24 @@ def dashboard():
                      finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
-window1, window2, window3, window4 = dashboard(), None, None, None
+window = dashboard()
 
 
 # While loop waarin alle events die er gebeuren kunnen uitgelezen worden
 while True:
-    window, event, values = sg.read_all_windows()
+    event, values = window.read()
 
     if event == sg.WIN_CLOSED or event == 'Exit::exitkey':
-
-        window.close()
-
-        if window == window2:
-            window2 = None
-
-        elif window == window3:
-            window3 = None
-
-        elif window == window4:
-            window4 = None
-
-        elif window == window1:
-            break
+        break
 
     elif event == 'Help::help':
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
+
+    elif event == 'Games::Gameskey':
+        sg.Popup('Niet actief', title='Error')
+
+    elif event == 'Friends::friendskey':
+        sg.Popup('Niet actief', title='Error')
 
     elif event == '-CONNECT-':
         hostname = values['-HOST-']
