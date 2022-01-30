@@ -265,7 +265,9 @@ while True:
 
     elif event == '-OUTPUT-':  # Als er op een naam word geklikt
         steamname = values['-OUTPUT-'][0]
-        steamid1 = search_name(steamname, name_steamid)  # Geeft steamid om de lijst van games te krijgen
+
+        # Geeft steamid om de lijst van games te krijgen
+        steamid1 = search_name(steamname, name_steamid)
         gameidlijst, gamenames, playintimes = get_games(steamid1)
 
         if gamenames == None:  # Als iemand geen games heeft
