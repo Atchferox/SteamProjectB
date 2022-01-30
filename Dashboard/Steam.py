@@ -17,7 +17,7 @@ Jasper
 '''
 
 
-import PySimpleGUI as sg 
+import PySimpleGUI as sg
 from ctypes import windll
 
 from numpy import true_divide
@@ -287,7 +287,9 @@ while True:
                 produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
                 playtime = gamename_playtime[selectedgame]
                 uurgespeeld = convert_min_to_hour(playtime)
-                window['-STATS-'].update(f'Steam naam: {steamname} \nTotale speeltijd: {uurgespeeld}')
+                steamlvl = get_steamlvl(steamid1)
+                window['-STATS-'].update(
+                    f'Steam naam: {steamname} \nSteam level: {steamlvl} \nTotale speeltijd: {uurgespeeld}')
                 window['-STATSFR-'].update(visible=True)
 
         except (KeyError, NameError):

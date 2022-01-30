@@ -10,7 +10,7 @@ def send_file(ip: str, un: str, pw: str, localfile: str, remotefile: str, filena
                    username=un, password=pw, look_for_keys=False
                    )
 
-    # Laad de file naar de pi
+    # Upload de file naar de pi
     sftp = client.open_sftp()
     sftp.put(localfile, remotefile)
     sftp.close()

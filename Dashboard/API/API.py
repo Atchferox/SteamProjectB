@@ -61,6 +61,13 @@ def get_steamspy(appid: int, data: str):
             raise KeyError("Requested data not found")
 
 
+def get_steamlvl(steamid: int):
+    r = requests.get(
+        f"https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamid={steamid}")
+    r = r.json()
+    return r['response']['player_level']
+
+
 def top100games():
     """
     Fetches the top 100 games on steam in the past 2 weeks as list
