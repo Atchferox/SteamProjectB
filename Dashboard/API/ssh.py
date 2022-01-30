@@ -1,7 +1,7 @@
 import paramiko
 
 
-def send_file(ip: str, un: str, pw: str, localfile: str, remotefile: str, filename: str):
+def send_file(ip: str, un: str, pw: str, localfile: str, remotefile: str):
     # Opent ssh connectie met aangegeven credentials
     client = paramiko.SSHClient()
     client.load_system_host_keys()
@@ -16,7 +16,7 @@ def send_file(ip: str, un: str, pw: str, localfile: str, remotefile: str, filena
     sftp.close()
 
     # Runt die file
-    stdout = client.exec_command(f'python {filename}')[1]
+    stdout = client.exec_command(f'python {remotefile}')[1]
     for line in stdout:
         # Voor testen
         print(line)
