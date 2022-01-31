@@ -156,7 +156,7 @@ def dashboard():
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
 
     # Matplotlib canvas
-    figure_canvas = [[sg.Text(key='-TITEL-', font=("Montserrat Extra Light", 30))],
+    figure_canvas = [[sg.Text(key='-TITEL-', font=("Montserrat Extra Light", 22))],
                      [sg.Text(key='-GAMEINFO-', font=font2)],
                      [sg.Canvas(key='-Dashboard_Review_Canvas-')],
                      [sg.Frame(title='Stats', layout=stats, border_width=1, key='-STATSFR-', visible=False, font=font2)]
@@ -232,7 +232,7 @@ while True:
             pass
 
     elif event == 'dashboard_search':
-        window['-ZOEK-'].update('')
+        window['-GSEARCH-'].update('')
 
         '''binary search op ingevoerde gamenaam'''
         game_input = values['-GSEARCH-']
