@@ -16,6 +16,7 @@ def get_appid(name: str):
     f.close()
     return appid
 
+
 def get_game_info(appid: int):
     r = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
     r = r.json()
@@ -26,7 +27,6 @@ def get_game_info(appid: int):
     genre = list(tags.keys())[0]
 
     return prijs, genre
-
 
 
 def game_list():
@@ -71,6 +71,31 @@ def get_steamspy(appid: int, data: str):
             return return_data
         except KeyError:  # throws an error if the data variable is not a valid choice
             raise KeyError("Requested data not found")
+
+
+def get_status(steamid: int):
+    response = requests.get(
+        f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamids={steamid}")
+    data = response.json()
+    userstatus = data["response"]["players"][0]["personastate"]
+
+    if userstatus == 0:
+        return 'Offline'
+    if userstatus == 1:
+        return 'Online'
+    if userstatus == 2:
+        return 'Busy'
+    if userstatus == 3:
+        return 'Away'
+    if userstatus == 4:
+        return 'Snooze'
+    if userstatus == 5:
+        return 'Looking to Trade'
+    if userstatus == 6:
+        return 'Looking to play'
+
+
+get_status(76561198333498208)
 
 
 def get_steamlvl(steamid: int):

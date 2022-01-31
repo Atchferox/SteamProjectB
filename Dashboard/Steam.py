@@ -156,7 +156,7 @@ def dashboard():
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
 
     # Matplotlib canvas
-    figure_canvas = [[sg.Text(key='-TITEL-', font=("Montserrat Extra Light", 22))],
+    figure_canvas = [[sg.Text(key='-TITEL-', font=font)],
                      [sg.Text(key='-GAMEINFO-', font=font2)],
                      [sg.Canvas(key='-Dashboard_Review_Canvas-')],
                      [sg.Frame(title='Stats', layout=stats, border_width=1, key='-STATSFR-', visible=False, font=font2)]
@@ -250,7 +250,7 @@ while True:
 
             # update stats met foutmelding
             window['-STATSFR-'].update(visible=True)
-            window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen') 
+            window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
             window['-TITEL-'].update(visible=False)
             window['-GAMEINFO-'].update(visible=False)
 
@@ -323,10 +323,11 @@ while True:
                 playtime = gamename_playtime[selectedgame]
                 uurgespeeld = convert_min_to_hour(playtime)
                 steamlvl = get_steamlvl(steamid1)
+                status = get_status(steamid1)
 
                 # Window met statistieken updaten
                 window['-STATS-'].update(
-                    f'Steam naam: {steamname} \nSteam level: {steamlvl} \nTotale speeltijd: {uurgespeeld}')
+                    f'Steam naam: {steamname} \nSteam level: {steamlvl} \nDeze user is {status} \nTotale speeltijd: {uurgespeeld}')
                 window['-STATSFR-'].update(visible=True)
                 window['-TITEL-'].update(selectedgame)
                 window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}')
