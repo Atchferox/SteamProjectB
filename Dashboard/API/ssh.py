@@ -1,7 +1,7 @@
 import paramiko
 
 
-def Connect_ssh(ip: str, un: str, pw: str, filename: str):
+def connect_ssh(ip: str, un: str, pw: str, filename: str):
     # Opent ssh connectie met aangegeven credentials
     client = paramiko.SSHClient()
     client.load_system_host_keys()

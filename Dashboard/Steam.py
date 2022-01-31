@@ -20,7 +20,7 @@ Jasper
 import PySimpleGUI as sg
 from ctypes import windll
 
-from numpy import true_divide
+
 from API.API import *
 from API.ssh import *
 
@@ -106,10 +106,11 @@ def search_name(name, dic):
 def dashboard():
     topgames, listofids = top100games()
 
-    menu_def = [['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
-                ['Library', ['Games::Gameskey']],
-                ['Status', ['Online::online', 'Offline::offline', 'AFK::afk']]
-                ]  # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
+    # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
+    menu_def = [
+        ['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
+        ['Library', ['Games::Gameskey']],
+        ['Status', ['Online::online', 'Offline::offline', 'AFK::afk']]]
 
     pop_games = [[sg.Text('Populaire Games', font=font)]]
 
@@ -204,6 +205,7 @@ while True:
             hostnamesaved = hostname
             usernamesaved = username
             passwordsaved = password
+            connect_ssh(hostnamesaved, usernamesaved, passwordsaved, 'helloworld().py')
 
     elif event == 'Online::online':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
