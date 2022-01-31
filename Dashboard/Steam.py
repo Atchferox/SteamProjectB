@@ -93,7 +93,7 @@ def produce_bar_diagram(values, key, naam):
     fig.add_subplot(111).bar(names, values, width=0.4, align='center', color=colors)
     plt.ylim(0, 100)
 
-    plt.title(naam, color='white')
+    plt.title('Reviews', color='white')
     plt.tick_params(colors='white')
 
     return draw_figure(window[key].TKCanvas, fig, key)
@@ -155,7 +155,9 @@ def dashboard():
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
 
     # Matplotlib canvas
-    figure_canvas = [[sg.Canvas(key='-Dashboard_Review_Canvas-')],
+    figure_canvas = [[sg.Text(key='-TITEL-', font=("Montserrat Extra Light", 30))],
+                     [sg.Text(key='-GAMEINFO-', font=font2)],
+                     [sg.Canvas(key='-Dashboard_Review_Canvas-')],
                      [sg.Frame(title='Stats', layout=stats, border_width=1, key='-STATSFR-', visible=False, font=font2)]
                      ]
 
@@ -253,9 +255,12 @@ while True:
             avg_speeltijd = get_average_playtime(appid)
             estimate_owners = get_estimate_owners(appid)
             review_percentage = get_review_values(find_game)
+            prijs, genre = get_game_info(appid)
 
             # In de GUI zetten
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
+            window['-TITEL-'].update(find_game)
+            window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}')
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update(
                 f"De gemiddelde speeltijd is {avg_speeltijd} \nSchatting aantal gebruikers: {estimate_owners}")
@@ -304,6 +309,8 @@ while True:
                 # Reviews in matplotlib
                 review_percentage = get_review_values(selectedgame)
                 produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
+                appid = get_appid(selectedgame)
+                prijs, genre = get_game_info(appid)
 
                 # Get statistics
                 playtime = gamename_playtime[selectedgame]
@@ -314,6 +321,8 @@ while True:
                 window['-STATS-'].update(
                     f'Steam naam: {steamname} \nSteam level: {steamlvl} \nTotale speeltijd: {uurgespeeld}')
                 window['-STATSFR-'].update(visible=True)
+                window['-TITEL-'].update(selectedgame)
+                window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}')
 
         except (KeyError, NameError):
             print('Je kan dit niet selecteren')
