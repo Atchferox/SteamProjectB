@@ -16,6 +16,18 @@ def get_appid(name: str):
     f.close()
     return appid
 
+def get_game_info(appid: int):
+    r = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
+    r = r.json()
+    prijs = r['price']
+    prijs = (int(prijs) / 100)
+
+    tags = r['tags']
+    genre = list(tags.keys())[0]
+
+    return prijs, genre
+
+
 
 def game_list():
     f = open('API/appids.json')
