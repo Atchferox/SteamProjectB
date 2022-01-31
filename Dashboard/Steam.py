@@ -199,56 +199,62 @@ while True:
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
         else:
-            # run file
-            pass
+            hostnamesaved = hostname
+            usernamesaved = username
+            passwordsaved = password
 
     elif event == 'Online::online':
-        hostname = values['-HOST-']
-        username = values['-UN-']
-        password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+
         else:
-            # Run file
+            # hostnamesaved, usernamesaved, passwordsaved, online
             pass
 
     elif event == 'Offline::offline':
-        hostname = values['-HOST-']
-        username = values['-UN-']
-        password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+
         else:
-            # Run file
+            # hostnamesaved, usernamesaved, passwordsaved, offline
             pass
 
     elif event == 'AFK::afk':
-        hostname = values['-HOST-']
-        username = values['-UN-']
-        password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
+
         else:
-            # Run file
+            # hostnamesaved, usernamesaved, passwordsaved, afk
             pass
 
     elif event == 'dashboard_search':
         window['-ZOEK-'].update('')
+
         '''binary search op ingevoerde gamenaam'''
         game_input = values['-GSEARCH-']
         find_game = binary_search(game_input)
+
         if find_game == '404NotFound':
+            # Game naam niet gevonden
             figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
+
+            # maakt canvas leeg
             figure_canvas_agg.get_tk_widget().destroy()
+
+            # update stats met foutmelding
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
 
         else:
             window['-ZOEK-'].update('Game gevonden!')
+
             appid = get_appid(find_game)
+            # get statistics
             avg_speeltijd = get_average_playtime(appid)
             estimate_owners = get_estimate_owners(appid)
             review_percentage = get_review_values(find_game)
+
+            # In de GUI zetten
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update(
@@ -257,11 +263,16 @@ while True:
     elif event == 'Search':     # Vrienden zoeken
 
         if not values['-INPUT-']:
-            window['-OUTPUT-'].update(f"Results: \nName not found")  # Als de naam niet gevonden is
+            # Als de naam niet gevonden is
+            window['-OUTPUT-'].update(f"Results: \nName not found")
+
         else:
-            steamid = get_steamid(values['-INPUT-'])  # Krijgt de steamid van de naam die is ingevoerd
+            # Krijgt de steamid van de naam die is ingevoerd
+            steamid = get_steamid(values['-INPUT-'])
             vriendlijst, name_steamid = get_friends(steamid)
-            window['-OUTPUT-'].update(vriendlijst, visible=True, disabled=False)  # Update de listbox van vrienden
+
+            # Update de listbox van vrienden
+            window['-OUTPUT-'].update(vriendlijst, visible=True, disabled=False)
 
     elif event == '-OUTPUT-':  # Als er op een naam word geklikt
         steamname = values['-OUTPUT-'][0]
@@ -270,26 +281,36 @@ while True:
         steamid1 = search_name(steamname, name_steamid)
         gameidlijst, gamenames, playintimes = get_games(steamid1)
 
-        if gamenames == None:  # Als iemand geen games heeft
+        # Als iemand geen games heeft
+        if gamenames == None:
             window['-LISTGAMES-'].update(values=['Geen Games'], visible=True)
+
         else:
+            # Maakt 2 dictionaries om dingen in op te slaan die we later nodig hebben
             gamename_playtime = dict(zip(gamenames, playintimes))
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
 
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
+
         try:
             if selectedgame == 'Geen Games':
                 figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
                 figure_canvas_agg.get_tk_widget().destroy()
                 window['-STATS-'].update('Deze user heeft geen spellen')
+
             else:
+                # Reviews in matplotlib
                 review_percentage = get_review_values(selectedgame)
                 produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
+
+                # Get statistics
                 playtime = gamename_playtime[selectedgame]
                 uurgespeeld = convert_min_to_hour(playtime)
                 steamlvl = get_steamlvl(steamid1)
+
+                # Window met statistieken updaten
                 window['-STATS-'].update(
                     f'Steam naam: {steamname} \nSteam level: {steamlvl} \nTotale speeltijd: {uurgespeeld}')
                 window['-STATSFR-'].update(visible=True)
