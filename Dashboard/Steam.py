@@ -2,7 +2,7 @@
 Voor dit programma moeten er een paar dingen worden geinstalleerd. 
 Ten eerste, PySimpleGUI, dit doe je met pip install PySimpleGUI.
 Ten tweede, Matplotlib, dit doe je met pip install matplotlib
-Ten derde, Paraminko, dit doe je met pip install paraminko
+Ten derde, Paraminko, dit doe je met pip install paramiko
 
 
 Krijg je een fout melding als je dit programma probeert te openenen, ga dan naar de subdirectory Dashboard. 
@@ -238,14 +238,19 @@ while True:
 
         if find_game == '404NotFound':
             # Game naam niet gevonden
-            figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
+            try:
+                figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
 
-            # maakt canvas leeg
-            figure_canvas_agg.get_tk_widget().destroy()
+                # maakt canvas leeg
+                figure_canvas_agg.get_tk_widget().destroy()
+            except KeyError:
+                pass
 
             # update stats met foutmelding
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+            window['-TITEL-'].update(visible=False)
+            window['-GAMEINFO-'].update(visible=False)
 
         else:
             window['-ZOEK-'].update('Game gevonden!')
@@ -259,8 +264,8 @@ while True:
 
             # In de GUI zetten
             produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
-            window['-TITEL-'].update(find_game)
-            window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}')
+            window['-TITEL-'].update(find_game, visible=True)
+            window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}', visible=True)
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update(
                 f"De gemiddelde speeltijd is {avg_speeltijd} \nSchatting aantal gebruikers: {estimate_owners}")
