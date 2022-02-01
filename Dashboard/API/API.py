@@ -24,9 +24,13 @@ def get_game_info(appid: int):
     prijs = (int(prijs) / 100)
 
     tags = r['tags']
-    genre = list(tags.keys())[0]
+    if len(tags) == 1 or len(tags) == 2:
+        genrelist = list(tags.keys())[:len(tags)]
+    else:
+        genrelist = list(tags.keys())[:3]
+    genres = ", ".join(genrelist)
 
-    return prijs, genre
+    return prijs, genres
 
 
 def game_list():
@@ -147,8 +151,7 @@ def get_friends(steamid: int):
     userdata = requests.get(
         f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?steamids={string}&key=2FA40FBA36691E988C1AC28FCDAE2545')
     userdata = userdata.json()
-    names = [player["personaname"] for player in userdata["response"]
-             ["players"]]  # List comprehension to get a list of names
+    names = [player["personaname"] for player in userdata["response"]["players"]]  # List comprehension to get a list of names
 
     i = 0
     name_steamid = dict(zip(names, friendids))
@@ -161,7 +164,7 @@ def get_games(steamid: int):
     Fetches list of given users' games, returns list of gameids
     """
     r = requests.get(
-        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545&include_appinfo=true')
+        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545&include_appinfo=true&include_played_free_games=true')
     r = r.json()
     try:
         gameslist = r["response"]["games"]
@@ -182,17 +185,21 @@ def get_games(steamid: int):
     return gameids, gamenames, playingtime
 
 
-def get_background(appid: int):
+def get_header(appid: int):
     """
-    Fetches game background from steam API. \n
-    Returns img as PIL Image object
+    Fetches game header from steam API. \n
+    Returns header as base64 bytes
     """
     r = requests.get(f'https://store.steampowered.com/api/appdetails/?appids={appid}')
     r = r.json()
 
-    background = r[str(appid)]['data']['background']
+    url = r[str(appid)]['data']['header_image']
+    background = requests.get(url)
     img = Image.open(BytesIO(background.content))
-    return img
+    png_bio = BytesIO()
+    img.save(png_bio, format="PNG")
+    png_data = png_bio.getvalue()
+    return png_data
 
 
 def get_user_game_stats(appid, steamid):
