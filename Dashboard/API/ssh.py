@@ -1,7 +1,7 @@
 import paramiko
 
 
-def connect_ssh(ip: str, un: str, pw: str, filename: str):
+def connect_ssh(ip: str, un: str, pw: str, filename: str, command):
     # Opent ssh connectie met aangegeven credentials
     client = paramiko.SSHClient()
     client.load_system_host_keys()
@@ -11,7 +11,10 @@ def connect_ssh(ip: str, un: str, pw: str, filename: str):
                    )
 
     # Runt die file
-    stdout = client.exec_command(f'python {filename}')[1]
+    if command == None:
+        stdout = client.exec_command(f'python {filename}')[1]
+    else:
+        stdout = client.exec_command(f'python {filename} {command}')[1]
     for line in stdout:
         # Voor testen
         print(line)

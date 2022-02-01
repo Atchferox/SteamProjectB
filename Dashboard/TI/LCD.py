@@ -63,11 +63,11 @@ LCD_LINE_2 = 0xC0  # LCD RAM address for the 2nd line
 E_PULSE = 0.0005
 E_DELAY = 0.0005
 
-steam_id = sys.argv
-print(steam_id)
+for arg in sys.argv:
+    steamid = arg
 
 
-def main():
+def main(steamid: str):
     # Main program block
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
@@ -81,24 +81,37 @@ def main():
     # Initialise display
     lcd_init()
 
+<<<<<<< HEAD
     try:
             #haal user data op via steam API
             response = requests.get("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamids=76561198208819849")
+=======
+    while True:
+        try:
+            # haal user data op via steam API
+            response = requests.get(
+                f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamids={steamid}")
+>>>>>>> 11a5bb763cad54e3b77b83c950ec67646bb098be
             data = response.json()
-            #filter game naam uit
+            # filter game naam uit
             game = data["response"]["players"][0]["gameextrainfo"]
     except KeyError:
             game = 'No game found'
 
+<<<<<<< HEAD
         #als er geen game gevonden is
     if game == 'No game found':
+=======
+        # als er geen game gevonden is
+        if game == 'No game found':
+>>>>>>> 11a5bb763cad54e3b77b83c950ec67646bb098be
             lcd_string(game, LCD_LINE_1)
             lcd_string('', LCD_LINE_2)
             time.sleep(20)
 
     else:
             lcd_string("Now Playing:", LCD_LINE_1)
-            #als naam game langer is dan 16 tekens scroll door game naam heen
+            # als naam game langer is dan 16 tekens scroll door game naam heen
             if len(game) > 16:
                 str_pad = " " * 16
                 game = str_pad + game
@@ -109,7 +122,7 @@ def main():
                     time.sleep(0.3)
                 lcd_byte(LCD_LINE_2, LCD_CMD)
                 lcd_string(str_pad, LCD_LINE_2)
-            #anders toon naam game
+            # anders toon naam game
             else:
                 lcd_string(game, LCD_LINE_2)
                 time.sleep(20)
