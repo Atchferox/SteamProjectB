@@ -90,7 +90,8 @@ def produce_bar_diagram(values, key, naam):
     colors = ['#60B6E7', '#E06363']
 
     fig = plt.figure(figsize=(3, 3), facecolor='#1C1E23')
-    fig.add_subplot(111).bar(names, values, width=0.4, align='center', color=colors)
+    fig.add_subplot(111).bar(names, values, width=0.4,
+                             align='center', color=colors)
     plt.ylim(0, 100)
 
     plt.title('Reviews', color='white')
@@ -108,9 +109,11 @@ def dashboard():
 
     # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
     menu_def = [
-        ['Steam', ['Friends::friendskey', 'Help::help', 'About', '---', 'Contact Steam', '---', 'Exit::exitkey']],
+        ['Steam', ['Friends::friendskey', 'Help::help', 'About',
+                   '---', 'Contact Steam', '---', 'Exit::exitkey']],
         ['Library', ['Games::Gameskey']],
-        ['Status', ['Online::online', 'Offline::offline', 'AFK::afk']]]
+        ['Status', ['Online::online', 'Offline::offline', 'AFK::afk']]
+    ]
 
     pop_games = [[sg.Text('Populaire Games', font=font)]]
 
@@ -126,7 +129,8 @@ def dashboard():
 
     # Binary search box, vriendenlijst en gamelijst
     tweedecolom = [[sg.Text('Search Games', font=font)],
-                   [sg.Input(size=(25, 20), key='-GSEARCH-'), sg.Button('Search', key='dashboard_search')],
+                   [sg.Input(size=(25, 20), key='-GSEARCH-'),
+                    sg.Button('Search', key='dashboard_search')],
 
                    # Search Results
                    [sg.Text(text='', key='-ZOEK-', visible=True, font=font2)],
@@ -150,7 +154,8 @@ def dashboard():
                        size=(30, 20))
                     ],
                    # Frame om alles in te zetten
-                   [sg.Frame(title='Pi', layout=connect_layout, pad=12, font=font2)]
+                   [sg.Frame(title='Pi', layout=connect_layout,
+                             pad=12, font=font2)]
                    ]
     # Hier worden de statistieken getoont
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
@@ -159,7 +164,8 @@ def dashboard():
     figure_canvas = [[sg.Text(key='-TITEL-', font=font)],
                      [sg.Text(key='-GAMEINFO-', font=font2)],
                      [sg.Canvas(key='-Dashboard_Review_Canvas-')],
-                     [sg.Frame(title='Stats', layout=stats, border_width=1, key='-STATSFR-', visible=False, font=font2)]
+                     [sg.Frame(title='Stats', layout=stats, border_width=1,
+                               key='-STATSFR-', visible=False, font=font2)]
                      ]
 
     # Volledige layout van de main window
@@ -205,7 +211,8 @@ while True:
             hostnamesaved = hostname
             usernamesaved = username
             passwordsaved = password
-            connect_ssh(hostnamesaved, usernamesaved, passwordsaved, 'helloworld().py')
+            connect_ssh(hostnamesaved, usernamesaved,
+                        passwordsaved, 'helloworld().py')
 
     elif event == 'Online::online':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
@@ -250,7 +257,8 @@ while True:
 
             # update stats met foutmelding
             window['-STATSFR-'].update(visible=True)
-            window['-STATS-'].update('Game niet gevonden, \nprobeer de volledige naam in te typen')
+            window['-STATS-'].update(
+                'Game niet gevonden, \nprobeer de volledige naam in te typen')
             window['-TITEL-'].update(visible=False)
             window['-GAMEINFO-'].update(visible=False)
 
@@ -265,9 +273,11 @@ while True:
             prijs, genre = get_game_info(appid)
 
             # In de GUI zetten
-            produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', find_game)
+            produce_bar_diagram(review_percentage,
+                                '-Dashboard_Review_Canvas-', find_game)
             window['-TITEL-'].update(find_game, visible=True)
-            window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}', visible=True)
+            window['-GAMEINFO-'].update(
+                f'Prijs: {prijs}\nGenre: {genre}', visible=True)
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update(
                 f"De gemiddelde speeltijd is {avg_speeltijd} \nSchatting aantal gebruikers: {estimate_owners}")
@@ -284,7 +294,8 @@ while True:
             vriendlijst, name_steamid = get_friends(steamid)
 
             # Update de listbox van vrienden
-            window['-OUTPUT-'].update(vriendlijst, visible=True, disabled=False)
+            window['-OUTPUT-'].update(vriendlijst,
+                                      visible=True, disabled=False)
 
     elif event == '-OUTPUT-':  # Als er op een naam word geklikt
         steamname = values['-OUTPUT-'][0]
@@ -315,7 +326,8 @@ while True:
             else:
                 # Reviews in matplotlib
                 review_percentage = get_review_values(selectedgame)
-                produce_bar_diagram(review_percentage, '-Dashboard_Review_Canvas-', selectedgame)
+                produce_bar_diagram(review_percentage,
+                                    '-Dashboard_Review_Canvas-', selectedgame)
                 appid = get_appid(selectedgame)
                 prijs, genre = get_game_info(appid)
 
