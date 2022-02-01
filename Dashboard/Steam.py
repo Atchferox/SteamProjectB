@@ -198,7 +198,7 @@ while True:
     if event == sg.WIN_CLOSED or event == 'Exit::exitkey':
         try:
             connect_ssh(hostnamesaved, usernamesaved,
-                        passwordsaved, 'cleanup.py', command=None)
+                        passwordsaved, 'cleanup.py')
             print('cleanup')
         except NameError:
             pass
@@ -231,7 +231,7 @@ while True:
 
         else:
             online = connect_ssh(hostnamesaved, usernamesaved,
-                                 passwordsaved, 'online.py', command=None)
+                                 passwordsaved, 'online.py')
 
     elif event == 'Offline::offline':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
@@ -239,7 +239,7 @@ while True:
 
         else:
             offline = connect_ssh(
-                hostnamesaved, usernamesaved, passwordsaved, 'offline.py', command=None)
+                hostnamesaved, usernamesaved, passwordsaved, 'offline.py')
 
     elif event == 'AFK::afk':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
@@ -247,7 +247,7 @@ while True:
 
         else:
             afk = connect_ssh(hostnamesaved, usernamesaved,
-                              passwordsaved, 'away.py', command=None)
+                              passwordsaved, 'away.py')
             pass
 
     elif event == 'dashboard_search':
@@ -318,12 +318,7 @@ while True:
         # Geeft steamid om de lijst van games te krijgen
         steamid1 = search_name(steamname, name_steamid)
         gameidlijst, gamenames, playintimes = get_games(steamid1)
-        try:
-            connect_ssh(hostnamesaved, usernamesaved,
-                        passwordsaved, 'LCD.py', steamid1)
-        except NameError:
-            sg.Popup('Connect eerst met de pi')
-            pass
+
         # Als iemand geen games heeft
         if gamenames == None:
             window['-LISTGAMES-'].update(values=['Geen Games'], visible=True)
@@ -333,6 +328,7 @@ while True:
             gamename_playtime = dict(zip(gamenames, playintimes))
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
+        
 
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
