@@ -199,6 +199,7 @@ while True:
         try:
             connect_ssh(hostnamesaved, usernamesaved,
                         passwordsaved, 'cleanup.py')
+            print('cleanup')
         except NameError:
             pass
         break
