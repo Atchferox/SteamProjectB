@@ -1,6 +1,5 @@
 import time
 import RPi.GPIO as GPIO
-import requests
 
 # RGB LED pinnen configureren.
 pinBlauw = 16

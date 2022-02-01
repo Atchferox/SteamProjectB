@@ -1,17 +1,21 @@
 import RPi.GPIO as GPIO
 
+# RGB LED pinnen configureren.
 pinBlauw = 16
 pinGroen = 20
 pinRood = 21
-LCD_RS = 26
-LCD_E = 19
-LCD_D4 = 13
-LCD_D5 = 6
-LCD_D6 = 5
-LCD_D7 = 22
-kill_switch = 12
 
+# GPIO setup.
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
+# Zet de GPIO pinnen als uitgang.
+GPIO.setup(pinRood, GPIO.OUT)
+GPIO.setup(pinGroen, GPIO.OUT)
+GPIO.setup(pinBlauw, GPIO.OUT)
+
+#Zet items uit
+GPIO.output(pinRood, GPIO.LOW)
+GPIO.output(pinGroen, GPIO.LOW)
+GPIO.output(pinBlauw, GPIO.LOW)
 GPIO.cleanup()
