@@ -40,6 +40,7 @@
 import RPi.GPIO as GPIO
 import time
 import requests
+import sys
 
 
 # Define GPIO to LCD mapping
@@ -61,6 +62,9 @@ LCD_LINE_2 = 0xC0  # LCD RAM address for the 2nd line
 # Timing constants
 E_PULSE = 0.0005
 E_DELAY = 0.0005
+
+steam_id = sys.argv
+print(steam_id)
 
 
 def main():
