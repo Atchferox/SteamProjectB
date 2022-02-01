@@ -20,6 +20,7 @@ Jasper
 import PySimpleGUI as sg
 from ctypes import windll
 
+import re
 
 from API.API import *
 from API.ssh import *
@@ -54,14 +55,19 @@ def binary_search(game_input):
     right = len(all_games_list) - 1
 
     while left <= right:
+        if not game_input.strip(): #Als de input leeg is
+            return '404NotFound'
         avg = int(left + (right - left) / 2)
+        game_input_re = re.sub('[^a-z ]', "", game_input.lower()) #verwijdert alle speciale tekens
+        game_inlist = all_games_list[avg].lower().replace("-", " ") #koppelteken moet een spatie worden, niet weggehaald worden zoals hieronder
+        game_inlist = re.sub('[^a-z ]', "", game_inlist) #verwijdert alle speciale tekens
 
-        if all_games_list[avg].lower() == game_input.lower():
+        if game_inlist == game_input_re:
             return all_games_list[avg]
 
-        elif all_games_list[avg] < game_input:
+        elif all_games_list[avg] < game_input.title():
             left = left + 1
-        elif all_games_list[avg] > game_input:
+        elif all_games_list[avg] > game_input.title():
             right = right - 1
     else:
         return '404NotFound'
@@ -161,7 +167,8 @@ def dashboard():
     stats = [[sg.Text(text='', key='-STATS-', font=font2)]]
 
     # Matplotlib canvas
-    figure_canvas = [[sg.Text(key='-TITEL-', font=font)],
+    figure_canvas = [[sg.Image(key='-HEADER-', visible=False, pad=((7, 0), (0, 10)))],
+                     [sg.Text(key='-TITEL-', font=font)],
                      [sg.Text(key='-GAMEINFO-', font=font2)],
                      [sg.Canvas(key='-Dashboard_Review_Canvas-')],
                      [sg.Frame(title='Stats', layout=stats, border_width=1,
@@ -175,7 +182,6 @@ def dashboard():
               sg.VerticalSeparator(),
               sg.vtop(sg.Frame(title='', layout=tweedecolom)),
               sg.vtop(sg.Frame(title='', layout=figure_canvas, border_width=0, pad=(20, 20)))]
-
               ]
 
     return sg.Window('Steam Home Page', layout, size=(1400, 760),
@@ -261,6 +267,7 @@ while True:
                 'Game niet gevonden, \nprobeer de volledige naam in te typen')
             window['-TITEL-'].update(visible=False)
             window['-GAMEINFO-'].update(visible=False)
+            window['-HEADER-'].update(visible=False)
 
         else:
             window['-ZOEK-'].update('Game gevonden!')
@@ -281,6 +288,7 @@ while True:
             window['-STATSFR-'].update(visible=True)
             window['-STATS-'].update(
                 f"De gemiddelde speeltijd is {avg_speeltijd} \nSchatting aantal gebruikers: {estimate_owners}")
+            window['-HEADER-'].update(visible=True, source=get_header(appid))
 
     elif event == 'Search':     # Vrienden zoeken
 
@@ -321,6 +329,9 @@ while True:
             if selectedgame == 'Geen Games':
                 figure_canvas_agg = figure_dic['-Dashboard_Review_Canvas-']
                 figure_canvas_agg.get_tk_widget().destroy()
+                window['-HEADER-'].update(visible=False)
+                window['-TITEL-'].update(visible=False)
+                window['-GAMEINFO-'].update(visible=False)
                 window['-STATS-'].update('Deze user heeft geen spellen')
 
             else:
@@ -343,6 +354,7 @@ while True:
                 window['-STATSFR-'].update(visible=True)
                 window['-TITEL-'].update(selectedgame)
                 window['-GAMEINFO-'].update(f'Prijs: {prijs}\nGenre: {genre}')
+                window['-HEADER-'].update(visible=True, source=get_header(appid))
 
         except (KeyError, NameError):
             print('Je kan dit niet selecteren')
