@@ -41,11 +41,11 @@ all_games_list = game_list()
 
 
 def draw_figure(canvas, figure, key):
-    ''''''
-    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
+    '''Combineerd de canvas met de diagram die je wil weergeven'''
+    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas) # figure_canvas_agg is een soort adres van een figure
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
-    figure_dic[key] = figure_canvas_agg
+    figure_dic[key] = figure_canvas_agg # slaat het 'adres' van de diagram op om later aan te roepen
     return figure_canvas_agg
 
 
@@ -79,8 +79,8 @@ def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
 
     try:  # Indien er al een diagram bestaat
-        figure_canvas_agg = figure_dic[key]
-        figure_canvas_agg.get_tk_widget().destroy()
+        figure_canvas_agg = figure_dic[key] # roept de diagram die reeds wordt getoond aan om die vervolgens te verwijderen
+        figure_canvas_agg.get_tk_widget().destroy() # verwijdert de diagram
         plt.clf()
         # plt.title('')
     except (KeyError, NameError):
