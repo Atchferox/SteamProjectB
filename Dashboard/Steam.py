@@ -17,6 +17,7 @@ Jasper
 '''
 
 
+from itertools import filterfalse
 import PySimpleGUI as sg
 from ctypes import windll
 
@@ -148,7 +149,7 @@ def dashboard():
                     sg.Button('Search')],
 
                    # Hier komt de lijst van vrienden
-                   [sg.Listbox(key='-OUTPUT-', values=[],
+                   [sg.Listbox(key='-OUTPUTF-', values=[],
                     select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=True, disabled=True,
                     size=(30, 20)),
 
@@ -216,8 +217,6 @@ while True:
             hostnamesaved = hostname
             usernamesaved = username
             passwordsaved = password
-            connect_ssh(hostnamesaved, usernamesaved,
-                        passwordsaved, 'helloworld().py')
 
     elif event == 'Online::online':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
@@ -266,6 +265,7 @@ while True:
                 'Game niet gevonden, \nprobeer de volledige naam in te typen')
             window['-TITEL-'].update(visible=False)
             window['-GAMEINFO-'].update(visible=False)
+            window['-ZOEK-'].update('')
 
         else:
             window['-ZOEK-'].update('Game gevonden!')
@@ -291,7 +291,9 @@ while True:
 
         if not values['-INPUT-']:
             # Als de naam niet gevonden is
-            window['-OUTPUT-'].update(f"Results: \nName not found")
+            window['-OUTPUTF-'].update([f"Results: \nName not found"])
+            window['-OUTPUTF-'].update(disabled=True)
+            window['-LISTGAMES-'].update(visible=False)
 
         else:
             # Krijgt de steamid van de naam die is ingevoerd
@@ -299,11 +301,11 @@ while True:
             vriendlijst, name_steamid = get_friends(steamid)
 
             # Update de listbox van vrienden
-            window['-OUTPUT-'].update(vriendlijst,
-                                      visible=True, disabled=False)
+            window['-OUTPUTF-'].update(vriendlijst,
+                                       visible=True, disabled=False)
 
-    elif event == '-OUTPUT-':  # Als er op een naam word geklikt
-        steamname = values['-OUTPUT-'][0]
+    elif event == '-OUTPUTF-':  # Als er op een naam word geklikt
+        steamname = values['-OUTPUTF-'][0]
 
         # Geeft steamid om de lijst van games te krijgen
         steamid1 = search_name(steamname, name_steamid)
