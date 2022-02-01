@@ -196,6 +196,11 @@ while True:
     event, values = window.read()
 
     if event == sg.WIN_CLOSED or event == 'Exit::exitkey':
+        try:
+            connect_ssh(hostnamesaved, usernamesaved,
+                        passwordsaved, 'cleanup.py')
+        except NameError:
+            pass
         break
 
     elif event == 'Help::help':
@@ -214,6 +219,7 @@ while True:
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
         else:
+            sg.Popup('Connected!')
             hostnamesaved = hostname
             usernamesaved = username
             passwordsaved = password
@@ -223,23 +229,24 @@ while True:
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
         else:
-            # hostnamesaved, usernamesaved, passwordsaved, online
-            pass
+            online = connect_ssh(hostnamesaved, usernamesaved,
+                                 passwordsaved, 'online.py')
 
     elif event == 'Offline::offline':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
         else:
-            # hostnamesaved, usernamesaved, passwordsaved, offline
-            pass
+            offline = connect_ssh(
+                hostnamesaved, usernamesaved, passwordsaved, 'offline.py')
 
     elif event == 'AFK::afk':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
         else:
-            # hostnamesaved, usernamesaved, passwordsaved, afk
+            afk = connect_ssh(hostnamesaved, usernamesaved,
+                              passwordsaved, 'away.py')
             pass
 
     elif event == 'dashboard_search':
