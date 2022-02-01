@@ -64,10 +64,10 @@ E_PULSE = 0.0005
 E_DELAY = 0.0005
 
 for arg in sys.argv:
-    steamid = arg
+    game = arg
 
 
-def main(steamid: str):
+def main(game: str):
     # Main program block
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbers
@@ -81,21 +81,10 @@ def main(steamid: str):
     # Initialise display
     lcd_init()
 
-    try:
-        # haal user data op via steam API
-        response = requests.get(
-            f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamids={steamid}")
-        data = response.json()
-        # filter game naam uit
-        game = data["response"]["players"][0]["gameextrainfo"]
-    except KeyError:
-        game = 'No game found'
-
     # als er geen game gevonden is
     if game == 'No game found':
         lcd_string(game, LCD_LINE_1)
         lcd_string('', LCD_LINE_2)
-        time.sleep(20)
 
     else:
         lcd_string("Now Playing:", LCD_LINE_1)
@@ -113,7 +102,6 @@ def main(steamid: str):
         # anders toon naam game
         else:
             lcd_string(game, LCD_LINE_2)
-            time.sleep(20)
 
 
 def lcd_init():
