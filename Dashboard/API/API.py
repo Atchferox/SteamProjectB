@@ -194,10 +194,10 @@ def get_games(steamid: int):
         gameslist, key=lambda d: d["playtime_forever"], reverse=True)
 
     # laat de 10 meest gespeelde games zien
-    gameids = [game["appid"] for game in sortedgames[:10]]
-    gamenames = [gamename["name"] for gamename in sortedgames[:10]]
+    gameids = [game["appid"] for game in sortedgames]
+    gamenames = [gamename["name"] for gamename in sortedgames]
     playingtime = [playtime["playtime_forever"]
-                   for playtime in sortedgames[:10]]
+                   for playtime in sortedgames]
 
     return gameids, gamenames, playingtime
 
