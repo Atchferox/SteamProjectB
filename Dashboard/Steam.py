@@ -17,6 +17,7 @@ Jasper
 '''
 
 
+from itertools import filterfalse
 import PySimpleGUI as sg
 from ctypes import windll
 
@@ -42,10 +43,14 @@ all_games_list = game_list()
 
 
 def draw_figure(canvas, figure, key):
-    ''''''
+    '''Combineerd de canvas met de diagram die je wil weergeven'''
+    # figure_canvas_agg is een soort adres van een figure
     figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
     figure_canvas_agg.draw()
+
     figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+
+    # slaat het 'adres' van de diagram op om later aan te roepen
     figure_dic[key] = figure_canvas_agg
     return figure_canvas_agg
 
@@ -85,8 +90,9 @@ def produce_bar_diagram(values, key, naam):
     '''Maakt staafdiagram'''
 
     try:  # Indien er al een diagram bestaat
+        # roept de diagram die reeds wordt getoond aan om die vervolgens te verwijderen
         figure_canvas_agg = figure_dic[key]
-        figure_canvas_agg.get_tk_widget().destroy()
+        figure_canvas_agg.get_tk_widget().destroy()  # verwijdert de diagram
         plt.clf()
         # plt.title('')
     except (KeyError, NameError):
@@ -149,7 +155,7 @@ def dashboard():
                     sg.Button('Search')],
 
                    # Hier komt de lijst van vrienden
-                   [sg.Listbox(key='-OUTPUT-', values=[],
+                   [sg.Listbox(key='-OUTPUTF-', values=[],
                     select_mode=sg.LISTBOX_SELECT_MODE_SINGLE, bind_return_key=True, enable_events=True, visible=True, disabled=True,
                     size=(30, 20)),
 
@@ -196,6 +202,12 @@ while True:
     event, values = window.read()
 
     if event == sg.WIN_CLOSED or event == 'Exit::exitkey':
+        try:
+            connect_ssh(hostnamesaved, usernamesaved,
+                        passwordsaved, 'cleanup.py')
+            print('cleanup')
+        except NameError:
+            pass
         break
 
     elif event == 'Help::help':
@@ -214,34 +226,34 @@ while True:
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
         else:
+            sg.Popup('Connected!')
             hostnamesaved = hostname
             usernamesaved = username
             passwordsaved = password
-            connect_ssh(hostnamesaved, usernamesaved,
-                        passwordsaved, 'helloworld().py')
 
     elif event == 'Online::online':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
         else:
-            # hostnamesaved, usernamesaved, passwordsaved, online
-            pass
+            online = connect_ssh(hostnamesaved, usernamesaved,
+                                 passwordsaved, 'online.py')
 
     elif event == 'Offline::offline':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
         else:
-            # hostnamesaved, usernamesaved, passwordsaved, offline
-            pass
+            offline = connect_ssh(
+                hostnamesaved, usernamesaved, passwordsaved, 'offline.py')
 
     elif event == 'AFK::afk':
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
         else:
-            # hostnamesaved, usernamesaved, passwordsaved, afk
+            afk = connect_ssh(hostnamesaved, usernamesaved,
+                              passwordsaved, 'away.py')
             pass
 
     elif event == 'dashboard_search':
@@ -294,7 +306,9 @@ while True:
 
         if not values['-INPUT-']:
             # Als de naam niet gevonden is
-            window['-OUTPUT-'].update(f"Results: \nName not found")
+            window['-OUTPUTF-'].update([f"Results: \nName not found"])
+            window['-OUTPUTF-'].update(disabled=True)
+            window['-LISTGAMES-'].update(visible=False)
 
         else:
             # Krijgt de steamid van de naam die is ingevoerd
@@ -302,11 +316,11 @@ while True:
             vriendlijst, name_steamid = get_friends(steamid)
 
             # Update de listbox van vrienden
-            window['-OUTPUT-'].update(vriendlijst,
-                                      visible=True, disabled=False)
+            window['-OUTPUTF-'].update(vriendlijst,
+                                       visible=True, disabled=False)
 
-    elif event == '-OUTPUT-':  # Als er op een naam word geklikt
-        steamname = values['-OUTPUT-'][0]
+    elif event == '-OUTPUTF-':  # Als er op een naam word geklikt
+        steamname = values['-OUTPUTF-'][0]
 
         # Geeft steamid om de lijst van games te krijgen
         steamid1 = search_name(steamname, name_steamid)
@@ -321,6 +335,7 @@ while True:
             gamename_playtime = dict(zip(gamenames, playintimes))
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
+        
 
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
