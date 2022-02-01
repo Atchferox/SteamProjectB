@@ -99,9 +99,6 @@ def get_status(steamid: int):
         return 'Looking to play'
 
 
-get_status(76561198333498208)
-
-
 def get_steamlvl(steamid: int):
     r = requests.get(
         f"https://api.steampowered.com/IPlayerService/GetSteamLevel/v1/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamid={steamid}")
