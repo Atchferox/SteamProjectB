@@ -81,23 +81,22 @@ def main():
     # Initialise display
     lcd_init()
 
-    while True:
-        try:
+    try:
             #haal user data op via steam API
             response = requests.get("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamids=76561198208819849")
             data = response.json()
             #filter game naam uit
             game = data["response"]["players"][0]["gameextrainfo"]
-        except KeyError:
+    except KeyError:
             game = 'No game found'
 
         #als er geen game gevonden is
-        if game == 'No game found':
+    if game == 'No game found':
             lcd_string(game, LCD_LINE_1)
             lcd_string('', LCD_LINE_2)
             time.sleep(20)
 
-        else:
+    else:
             lcd_string("Now Playing:", LCD_LINE_1)
             #als naam game langer is dan 16 tekens scroll door game naam heen
             if len(game) > 16:
