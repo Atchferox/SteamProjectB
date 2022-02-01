@@ -97,7 +97,6 @@ def get_status(steamid: int):
         return 'Looking to play'
 
 
-get_status(76561198333498208)
 
 
 def get_steamlvl(steamid: int):
