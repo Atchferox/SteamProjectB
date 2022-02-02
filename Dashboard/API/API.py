@@ -161,7 +161,7 @@ def get_friends(steamid: int):
 
     friends = r["friendslist"]["friends"]
     # List comprehension to get a list of IDs
-    friendids = [friend["steamid"] for friend in friends[:20]]
+    friendids = [friend["steamid"] for friend in friends]
     string = ",".join(friendids)  # for API CALL
     userdata = requests.get(
         f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?steamids={string}&key=2FA40FBA36691E988C1AC28FCDAE2545')
