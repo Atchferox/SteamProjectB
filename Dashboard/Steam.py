@@ -60,12 +60,13 @@ def binary_search(game_input):
     right = len(all_games_list) - 1
 
     while left <= right:
-        if not game_input.strip(): #Als de input leeg is
+        if not game_input.strip():  # Als de input leeg is
             return '404NotFound'
         avg = int(left + (right - left) / 2)
-        game_input_re = re.sub('[^a-z ]', "", game_input.lower()) #verwijdert alle speciale tekens
-        game_inlist = all_games_list[avg].lower().replace("-", " ") #koppelteken moet een spatie worden, niet weggehaald worden zoals hieronder
-        game_inlist = re.sub('[^a-z ]', "", game_inlist) #verwijdert alle speciale tekens
+        game_input_re = re.sub('[^a-z ]', "", game_input.lower())  # verwijdert alle speciale tekens
+        # koppelteken moet een spatie worden, niet weggehaald worden zoals hieronder
+        game_inlist = all_games_list[avg].lower().replace("-", " ")
+        game_inlist = re.sub('[^a-z ]', "", game_inlist)  # verwijdert alle speciale tekens
 
         if game_inlist == game_input_re:
             return all_games_list[avg]
@@ -121,9 +122,8 @@ def dashboard():
 
     # Hier komen de menu opties in. ['menu'['alles wat in het menu komt']]
     menu_def = [
-        ['Steam', ['Friends::friendskey', 'Help::help', 'About',
+        ['Steam', ['Help::help', 'About',
                    '---', 'Contact Steam', '---', 'Exit::exitkey']],
-        ['Library', ['Games::Gameskey']],
         ['Status', ['Online::online', 'Offline::offline', 'AFK::afk']]
     ]
 
@@ -213,12 +213,6 @@ while True:
     elif event == 'Help::help':
         sg.Popup('Contact me: Luuk.Munneke@student.hu.nl', title='Help')
 
-    elif event == 'Games::Gameskey':
-        sg.Popup('Niet actief', title='Error')
-
-    elif event == 'Friends::friendskey':
-        sg.Popup('Niet actief', title='Error')
-
     elif event == '-CONNECT-':
         hostname = values['-HOST-']
         username = values['-UN-']
@@ -232,6 +226,9 @@ while True:
             passwordsaved = password
 
     elif event == 'Online::online':
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
@@ -240,6 +237,9 @@ while True:
                                  passwordsaved, 'online.py')
 
     elif event == 'Offline::offline':
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
@@ -248,6 +248,9 @@ while True:
                 hostnamesaved, usernamesaved, passwordsaved, 'offline.py')
 
     elif event == 'AFK::afk':
+        hostname = values['-HOST-']
+        username = values['-UN-']
+        password = values['-PW-']
         if (hostname, username, password) == ('Hostadress', 'Username', 'Password'):
             sg.Popup('Vul eerst de gegevens voor de pi in', title='Error')
 
@@ -335,7 +338,6 @@ while True:
             gamename_playtime = dict(zip(gamenames, playintimes))
             gamenames_id = dict(zip(gamenames, gameidlijst))
         window['-LISTGAMES-'].update(values=gamenames, visible=True)
-        
 
     elif event == '-LISTGAMES-':
         selectedgame = values['-LISTGAMES-'][0]
