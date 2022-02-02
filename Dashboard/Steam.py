@@ -332,6 +332,7 @@ while True:
         # Als iemand geen games heeft
         if gamenames == None:
             window['-LISTGAMES-'].update(values=['Geen Games'], visible=True)
+            sg.Popup('Deze user heeft geen games en of heeft zijn steam inventory op privé staan', title='Error')
 
         else:
             # Maakt 2 dictionaries om dingen in op te slaan die we later nodig hebben
