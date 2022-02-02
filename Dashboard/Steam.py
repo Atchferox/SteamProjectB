@@ -190,7 +190,7 @@ def dashboard():
               sg.vtop(sg.Frame(title='', layout=figure_canvas, border_width=0, pad=(20, 20)))]
               ]
 
-    return sg.Window('Steam Home Page', layout, size=(1400, 760),
+    return sg.Window('Steam Home Page', layout, size=(1400, 800),
                      finalize=True, resizable=True, icon='img/steamlogo.ico')
 
 
