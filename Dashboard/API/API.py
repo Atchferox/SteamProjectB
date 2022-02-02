@@ -18,15 +18,20 @@ def get_appid(name: str):
 
 
 def get_game_info(appid: int):
-    r = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
+    r = requests.get(
+        f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
     r = r.json()
     prijs = r['price']
     prijs = (int(prijs) / 100)
 
     tags = r['tags']
-    genre = list(tags.keys())[0]
+    if len(tags) == 1 or len(tags) == 2:
+        genrelist = list(tags.keys())[:len(tags)]
+    else:
+        genrelist = list(tags.keys())[:3]
+    genres = ", ".join(genrelist)
 
-    return prijs, genre
+    return prijs, genres
 
 
 def game_list():
@@ -58,7 +63,8 @@ def get_steamspy(appid: int, data: str):
     owners; str of estimate of owners
     tags; dictionary of tags    
     """
-    r = requests.get(f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
+    r = requests.get(
+        f'https://steamspy.com/api.php?request=appdetails&appid={appid}')
     r = r.json()
     if data == "reviews":  # if statement since reviews is the only 'special' data
         pos = r['positive']
@@ -93,9 +99,6 @@ def get_status(steamid: int):
         return 'Looking to Trade'
     if userstatus == 6:
         return 'Looking to play'
-
-
-get_status(76561198333498208)
 
 
 def get_steamlvl(steamid: int):
@@ -133,6 +136,21 @@ def get_steamid(vanity: str):
     return steamid
 
 
+def get_currently_playing(steamid: str):
+    try:
+        # haal user data op via steam API
+        response = requests.get(
+            f"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=F7CD5F6E51D9114EC9D9C44EEBCA6FF7&steamids={steamid}")
+        data = response.json()
+        
+        # filter game naam uit
+        game = data["response"]["players"][0]["gameextrainfo"]
+    except KeyError:
+        game = 'No game found'
+
+    return game
+
+
 def get_friends(steamid: int):
     """
     Fetches list of given users friends' names
@@ -142,13 +160,13 @@ def get_friends(steamid: int):
     r = r.json()
 
     friends = r["friendslist"]["friends"]
-    friendids = [friend["steamid"] for friend in friends[:20]]  # List comprehension to get a list of IDs
+    # List comprehension to get a list of IDs
+    friendids = [friend["steamid"] for friend in friends[:20]]
     string = ",".join(friendids)  # for API CALL
     userdata = requests.get(
         f'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?steamids={string}&key=2FA40FBA36691E988C1AC28FCDAE2545')
     userdata = userdata.json()
-    names = [player["personaname"] for player in userdata["response"]
-             ["players"]]  # List comprehension to get a list of names
+    names = [player["personaname"] for player in userdata["response"]["players"]]  # List comprehension to get a list of names
 
     i = 0
     name_steamid = dict(zip(names, friendids))
@@ -161,7 +179,7 @@ def get_games(steamid: int):
     Fetches list of given users' games, returns list of gameids
     """
     r = requests.get(
-        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545&include_appinfo=true')
+        f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?steamid={steamid}&key=2FA40FBA36691E988C1AC28FCDAE2545&include_appinfo=true&include_played_free_games=true')
     r = r.json()
     try:
         gameslist = r["response"]["games"]
@@ -172,27 +190,34 @@ def get_games(steamid: int):
         playingtime = None
         return gamenames, gameid, playingtime
 
-    sortedgames = sorted(gameslist, key=lambda d: d["playtime_forever"], reverse=True)
+    sortedgames = sorted(
+        gameslist, key=lambda d: d["playtime_forever"], reverse=True)
 
     # laat de 10 meest gespeelde games zien
-    gameids = [game["appid"] for game in sortedgames[:10]]
-    gamenames = [gamename["name"] for gamename in sortedgames[:10]]
-    playingtime = [playtime["playtime_forever"] for playtime in sortedgames[:10]]
+    gameids = [game["appid"] for game in sortedgames]
+    gamenames = [gamename["name"] for gamename in sortedgames]
+    playingtime = [playtime["playtime_forever"]
+                   for playtime in sortedgames]
 
     return gameids, gamenames, playingtime
 
 
-def get_background(appid: int):
+def get_header(appid: int):
     """
-    Fetches game background from steam API. \n
-    Returns img as PIL Image object
+    Fetches game header from steam API. \n
+    Returns header as base64 bytes
     """
-    r = requests.get(f'https://store.steampowered.com/api/appdetails/?appids={appid}')
+    r = requests.get(
+        f'https://store.steampowered.com/api/appdetails/?appids={appid}')
     r = r.json()
 
-    background = r[str(appid)]['data']['background']
+    url = r[str(appid)]['data']['header_image']
+    background = requests.get(url)
     img = Image.open(BytesIO(background.content))
-    return img
+    png_bio = BytesIO()
+    img.save(png_bio, format="PNG")
+    png_data = png_bio.getvalue()
+    return png_data
 
 
 def get_user_game_stats(appid, steamid):
@@ -212,7 +237,8 @@ def get_average_playtime(appid: int):
 def convert_min_to_hour(minutes):
     import time
     time_seconds = minutes*60
-    time_format = time.strftime('%H uur en %M minuten', time.gmtime(time_seconds))
+    time_format = time.strftime(
+        '%H uur en %M minuten', time.gmtime(time_seconds))
     return time_format
 
 
