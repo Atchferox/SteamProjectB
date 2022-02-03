@@ -32,7 +32,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 # Hierdoor is het op elk scherm high definition
-windll.shcore.SetProcessDpiAwareness(1)
+windll.shcore.SetProcessDpiAwareness(0)
 
 sg.theme('darkgray10')
 font = ("Montserrat Extra Light", 18)  # Titel font
